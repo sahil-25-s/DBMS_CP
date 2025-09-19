@@ -4,229 +4,476 @@
 
 {% block content %}
 <div class="container">
-    <div class="movie-details-container">
-        <!-- Movie Header -->
-        <div class="movie-header">
-            <div class="movie-poster-large">
+    <div class="movie-hero animate-fade-in-up">
+        <div class="movie-backdrop">
+            {% if movie.image_url %}
+                <img src="{{ movie.image_url }}" alt="{{ movie.title }}">
+            {% endif %}
+            <div class="backdrop-overlay"></div>
+        </div>
+        
+        <div class="movie-content">
+            <div class="movie-poster">
                 {% if movie.image_url %}
-                    <img src="{{ movie.image_url }}" alt="{{ movie.title }}" onerror="this.src='{{ url_for('static', filename='images/default-movie.jpg') }}'">
-                {% else %}
-                    <img src="{{ url_for('static', filename='images/default-movie.jpg') }}" alt="{{ movie.title }}">
+                    <img src="{{ movie.image_url }}" alt="{{ movie.title }}">
                 {% endif %}
             </div>
             
-            <div class="movie-details">
+            <div class="movie-info">
                 <h1>{{ movie.title }}</h1>
                 
-                <div class="movie-meta-large">
-                    <div class="meta-item">
-                        <i class="fas fa-tags"></i>
-                        <span>{{ movie.genre }}</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-clock"></i>
-                        <span>{{ movie.duration }} mins</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-language"></i>
-                        <span>{{ movie.language }}</span>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-calendar"></i>
-                        <span>{{ movie.release_date.strftime('%B %d, %Y') if movie.release_date and movie.release_date.__class__.__name__ == 'date' else 'TBA' }}</span>
-                    </div>
+                <div class="movie-meta">
+                    <span class="genre">{{ movie.genre }}</span>
+                    <span class="duration">{{ movie.duration }}min</span>
+                    <span class="language">{{ movie.language }}</span>
                 </div>
                 
-                <div class="movie-rating-large">
-                    <div class="stars-large">
+                <div class="movie-rating">
+                    <div class="stars">
                         {% set rating = movie.avg_rating|round %}
                         {% for i in range(1, 6) %}
-                            {% if i <= rating %}
-                                <i class="fas fa-star"></i>
-                            {% else %}
-                                <i class="far fa-star"></i>
-                            {% endif %}
+                            {% if i <= rating %}⭐{% endif %}
                         {% endfor %}
                     </div>
-                    <span class="rating-text-large">
-                        {{ "%.1f"|format(movie.avg_rating) }}/5
-                        ({{ movie.review_count }} reviews)
-                    </span>
+                    <span class="rating-text">{{ "%.1f"|format(movie.avg_rating) }}/5 ({{ movie.review_count }} reviews)</span>
                 </div>
                 
-                <p class="movie-description-large">{{ movie.description }}</p>
+                <p class="movie-description">{{ movie.description }}</p>
             </div>
         </div>
+    </div>
 
-        <!-- Shows Section -->
-        <div class="shows-section">
-            <h2><i class="fas fa-calendar-alt"></i> Show Times & Book Tickets</h2>
-            
-            {% if shows %}
-                <div class="shows-container">
-                    {% set current_date = None %}
-                    {% for show in shows %}
-                        {% if show.show_date != current_date %}
-                            {% if current_date is not none %}
-                                </div> <!-- Close previous day's shows -->
-                            {% endif %}
-                            {% set current_date = show.show_date %}
-                            <div class="show-date">
-                                <h3>
-                                    <i class="fas fa-calendar"></i>
-                                    {{ show.show_date.strftime('%A, %B %d, %Y') if show.show_date and show.show_date.__class__.__name__ == 'date' else show.show_date }}
-                                </h3>
-                                <div class="show-times">
-                        {% endif %}
-                        
-                        <div class="show-card">
-                            <div class="show-info">
-                                <div class="show-time">
-                                    <i class="fas fa-clock"></i>
-                                    {{ show.show_time.strftime('%I:%M %p') if show.show_time and show.show_time.__class__.__name__ in ['time', 'datetime'] else show.show_time }}
-                                </div>
-                                <div class="theater-info">
-                                    <div class="theater-name">
-                                        <i class="fas fa-building"></i>
-                                        {{ show.theater_name }}
-                                    </div>
-                                    <div class="theater-location">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        {{ show.location }}
-                                    </div>
-                                </div>
-                                <div class="show-price">
-                                    <i class="fas fa-rupee-sign"></i>
-                                    ₹{{ "%.0f"|format(show.price) }}
-                                </div>
-                                <div class="available-seats">
-                                    <i class="fas fa-couch"></i>
-                                    {{ show.available_seats }} seats available
-                                </div>
-                            </div>
-                            
-                            <div class="show-actions">
-                                {% if show.available_seats > 0 %}
-                                    <a href="{{ url_for('book_seats', show_id=show.id) }}" class="btn btn-primary">
-                                        <i class="fas fa-ticket-alt"></i> Book Tickets
-                                    </a>
-                                {% else %}
-                                    <button class="btn btn-disabled" disabled>
-                                        <i class="fas fa-times"></i> Sold Out
-                                    </button>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% endfor %}
+    <div class="shows-section animate-fade-in-up stagger-1">
+        <h2>🎬 Show Times</h2>
+        
+        {% if shows %}
+            <div class="shows-grid">
+                {% for show in shows %}
+                <div class="show-card hover-lift">
+                    <div class="show-time">
+                        {{ show.show_time.strftime('%I:%M %p') if show.show_time else show.show_time }}
+                    </div>
+                    <div class="show-details">
+                        <div class="theater">{{ show.theater_name }}</div>
+                        <div class="location">{{ show.location }}</div>
+                        <div class="date">{{ show.show_date.strftime('%b %d') if show.show_date else show.show_date }}</div>
+                    </div>
+                    <div class="show-price">₹{{ "%.0f"|format(show.price) }}</div>
+                    <div class="show-seats">{{ show.available_seats }} seats</div>
                     
-                    {% if shows %}
-                        </div> <!-- Close last day's shows -->
+                    {% if show.available_seats > 0 %}
+                        <a href="{{ url_for('book_seats', show_id=show.id) }}" class="btn btn-primary hover-glow">
+                            Book Now
+                        </a>
+                    {% else %}
+                        <button class="btn btn-disabled" disabled>Sold Out</button>
                     {% endif %}
                 </div>
-            {% else %}
-                <div class="no-shows">
-                    <i class="fas fa-calendar-times"></i>
-                    <h3>No Shows Available</h3>
-                    <p>Please check back later for show times</p>
-                </div>
-            {% endif %}
-        </div>
-
-        <!-- Reviews Section -->
-        <div class="reviews-section">
-            <div class="reviews-header">
-                <h2><i class="fas fa-star"></i> Reviews & Ratings</h2>
-                <button class="btn btn-outline" onclick="showReviewModal()">
-                    <i class="fas fa-plus"></i> Write Review
-                </button>
-            </div>
-            
-            <div class="reviews-container">
-                {% for review in reviews %}
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="reviewer-name">
-                            <i class="fas fa-user-circle"></i>
-                            {{ review.customer_name }}
-                        </div>
-                        <div class="review-rating">
-                            {% for i in range(1, 6) %}
-                                {% if i <= review.rating %}
-                                    <i class="fas fa-star"></i>
-                                {% else %}
-                                    <i class="far fa-star"></i>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                        <div class="review-date">
-                            {{ review.created_at.strftime('%B %d, %Y') }}
-                        </div>
-                    </div>
-                    <p class="review-text">{{ review.review_text }}</p>
-                </div>
                 {% endfor %}
-                
-                {% if not reviews %}
-                <div class="no-reviews">
-                    <i class="fas fa-comment"></i>
-                    <h3>No Reviews Yet</h3>
-                    <p>Be the first to review this movie!</p>
-                </div>
-                {% endif %}
             </div>
+        {% else %}
+            <div class="no-shows">
+                <div class="no-shows-icon">🎭</div>
+                <h3>No Shows Available</h3>
+                <p>Check back later for show times</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="reviews-section animate-fade-in-up stagger-2">
+        <div class="reviews-header">
+            <h2>⭐ Reviews</h2>
+            <button class="btn btn-outline hover-scale" onclick="showReviewModal()">
+                Write Review
+            </button>
+        </div>
+        
+        <div class="reviews-grid">
+            {% for review in reviews %}
+            <div class="review-card hover-lift">
+                <div class="review-header">
+                    <div class="reviewer">{{ review.customer_name }}</div>
+                    <div class="review-rating">
+                        {% for i in range(1, 6) %}
+                            {% if i <= review.rating %}⭐{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <p class="review-text">{{ review.review_text }}</p>
+                <div class="review-date">{{ review.created_at.strftime('%b %d, %Y') }}</div>
+            </div>
+            {% endfor %}
+            
+            {% if not reviews %}
+            <div class="no-reviews">
+                <div class="no-reviews-icon">💬</div>
+                <h3>No Reviews Yet</h3>
+                <p>Be the first to review!</p>
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
 
-<!-- Review Modal -->
 <div id="reviewModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3><i class="fas fa-star"></i> Write a Review</h3>
+            <h3>Write Review</h3>
             <span class="close" onclick="closeReviewModal()">&times;</span>
         </div>
         
-        <form id="reviewForm" class="modal-form">
+        <form id="reviewForm">
             <input type="hidden" id="movieId" value="{{ movie.id }}">
             
             <div class="form-group">
-                <label for="customerName">Your Name</label>
-                <input type="text" id="customerName" name="customer_name" required>
+                <label>Your Name</label>
+                <input type="text" name="customer_name" required>
             </div>
             
             <div class="form-group">
-                <label for="rating">Rating</label>
+                <label>Rating</label>
                 <div class="star-rating">
-                    <input type="radio" name="rating" value="5" id="star5">
-                    <label for="star5"><i class="fas fa-star"></i></label>
-                    <input type="radio" name="rating" value="4" id="star4">
-                    <label for="star4"><i class="fas fa-star"></i></label>
-                    <input type="radio" name="rating" value="3" id="star3">
-                    <label for="star3"><i class="fas fa-star"></i></label>
-                    <input type="radio" name="rating" value="2" id="star2">
-                    <label for="star2"><i class="fas fa-star"></i></label>
-                    <input type="radio" name="rating" value="1" id="star1">
-                    <label for="star1"><i class="fas fa-star"></i></label>
+                    {% for i in range(5, 0, -1) %}
+                    <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}">
+                    <label for="star{{ i }}">⭐</label>
+                    {% endfor %}
                 </div>
             </div>
             
             <div class="form-group">
-                <label for="reviewText">Your Review</label>
-                <textarea id="reviewText" name="review_text" rows="4" required></textarea>
+                <label>Review</label>
+                <textarea name="review_text" rows="4" required></textarea>
             </div>
             
             <div class="modal-actions">
                 <button type="button" class="btn btn-outline" onclick="closeReviewModal()">Cancel</button>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-paper-plane"></i> Submit Review
-                </button>
+                <button type="submit" class="btn btn-primary">Submit</button>
             </div>
         </form>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
+<style>
+.movie-hero {
+    position: relative;
+    margin-bottom: 4rem;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.movie-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.movie-backdrop img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.3;
+    filter: blur(2px);
+}
+
+.backdrop-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 27, 75, 0.8) 100%);
+}
+
+.movie-content {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 3rem;
+    padding: 3rem;
+    color: white;
+}
+
+.movie-poster {
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.movie-poster img {
+    width: 100%;
+    height: 450px;
+    object-fit: cover;
+}
+
+.movie-info h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+}
+
+.movie-meta {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.movie-meta span {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.movie-rating {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stars {
+    font-size: 1.5rem;
+}
+
+.rating-text {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.movie-description {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    opacity: 0.9;
+}
+
+.shows-section {
+    margin-bottom: 4rem;
+}
+
+.shows-section h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.shows-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.show-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+    padding: 2rem;
+    color: white;
+    transition: var(--transition);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+.show-time {
+    grid-row: 1;
+    grid-column: 1;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.show-details {
+    grid-row: 1 / 3;
+    grid-column: 2;
+}
+
+.theater {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.location {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 0.5rem;
+}
+
+.date {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+.show-price {
+    grid-row: 1;
+    grid-column: 3;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--success);
+}
+
+.show-seats {
+    grid-row: 2;
+    grid-column: 3;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.show-card .btn {
+    grid-row: 3;
+    grid-column: 1 / 4;
+    justify-self: center;
+    margin-top: 1rem;
+}
+
+.reviews-section h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.reviews-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.review-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+    padding: 2rem;
+    color: white;
+    transition: var(--transition);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.reviewer {
+    font-weight: 600;
+}
+
+.review-rating {
+    font-size: 1.2rem;
+}
+
+.review-text {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.review-date {
+    font-size: 0.875rem;
+    opacity: 0.7;
+}
+
+.no-shows, .no-reviews {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: white;
+}
+
+.no-shows-icon, .no-reviews-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.no-shows h3, .no-reviews h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.star-rating {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 2rem;
+    cursor: pointer;
+    opacity: 0.3;
+    transition: var(--transition);
+}
+
+.star-rating input:checked ~ label,
+.star-rating label:hover {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .movie-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 2rem;
+    }
+    
+    .movie-poster {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    .movie-info h1 {
+        font-size: 2rem;
+    }
+    
+    .shows-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .show-card {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        text-align: center;
+    }
+    
+    .show-card > * {
+        grid-column: 1;
+        grid-row: auto;
+    }
+    
+    .reviews-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+</style>
+
 <script>
 function showReviewModal() {
     document.getElementById('reviewModal').style.display = 'block';
@@ -237,7 +484,6 @@ function closeReviewModal() {
     document.getElementById('reviewForm').reset();
 }
 
-// Handle review form submission
 document.getElementById('reviewForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -259,9 +505,7 @@ document.getElementById('reviewForm').addEventListener('submit', async function(
     try {
         const response = await fetch('/add_review', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(reviewData)
         });
         
@@ -271,16 +515,15 @@ document.getElementById('reviewForm').addEventListener('submit', async function(
             alert('Review submitted successfully!');
             location.reload();
         } else {
-            alert('Error submitting review: ' + result.message);
+            alert('Error: ' + result.message);
         }
     } catch (error) {
-        alert('Error submitting review. Please try again.');
+        alert('Error submitting review');
     }
     
     closeReviewModal();
 });
 
-// Close modal when clicking outside
 window.onclick = function(event) {
     const modal = document.getElementById('reviewModal');
     if (event.target === modal) {
