@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Error - MovieHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="error-container">
+        <div class="error-content">
+            <div class="error-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            
+            <h1>Oops! Something went wrong</h1>
+            
+            <div class="error-message">
+                <p>{{ message if message else "An unexpected error occurred. Please try again later." }}</p>
+            </div>
+            
+            <div class="error-actions">
+                <a href="{{ url_for('home') }}" class="btn btn-primary">
+                    <i class="fas fa-home"></i>
+                    Go Home
+                </a>
+                
+                <button class="btn btn-outline" onclick="history.back()">
+                    <i class="fas fa-arrow-left"></i>
+                    Go Back
+                </button>
+                
+                <button class="btn btn-secondary" onclick="location.reload()">
+                    <i class="fas fa-redo"></i>
+                    Try Again
+                </button>
+            </div>
+            
+            <div class="error-support">
+                <p>
+                    <i class="fas fa-life-ring"></i>
+                    Need help? Contact our support team at 
+                    <a href="mailto:support@moviehub.com">support@moviehub.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto redirect to home page after 10 seconds if user doesn't take action
+setTimeout(function() {
+    if (confirm('Would you like to return to the home page?')) {
+        window.location.href = '{{ url_for("home") }}';
+    }
+}, 10000);
+</script>
+{% endblock %}

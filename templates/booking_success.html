@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Confirmed - MovieHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="booking-success-container">
+        <div class="success-header">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1>Booking Confirmed!</h1>
+            <p>Your tickets have been successfully booked. Please save this confirmation for your records.</p>
+        </div>
+
+        <div class="ticket-container">
+            <div class="ticket">
+                <div class="ticket-header">
+                    <div class="ticket-logo">
+                        <i class="fas fa-film"></i>
+                        <span>MovieHub</span>
+                    </div>
+                    <div class="booking-id">
+                        <strong>Booking ID: #{{ booking.id }}</strong>
+                    </div>
+                </div>
+
+                <div class="ticket-content">
+                    <div class="movie-info">
+                        <h2>{{ booking.title }}</h2>
+                        <div class="show-details">
+                            <div class="detail-row">
+                                <div class="detail-item">
+                                    <i class="fas fa-building"></i>
+                                    <div>
+                                        <strong>{{ booking.theater_name }}</strong>
+                                        <small>{{ booking.location }}</small>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar"></i>
+                                    <div>
+                                        <strong>{{ booking.show_date.strftime('%A') }}</strong>
+                                        <small>{{ booking.show_date.strftime('%B %d, %Y') }}</small>
+                                    </div>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i>
+                                    <div>
+                                        <strong>{{ booking.show_time.strftime('%I:%M %p') }}</strong>
+                                        <small>Show Time</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="booking-details">
+                        <div class="seats-info">
+                            <h3>
+                                <i class="fas fa-couch"></i>
+                                Seat Information
+                            </h3>
+                            <div class="seats-booked">
+                                <strong>Seats: </strong>
+                                {% set seat_numbers = booking.seat_numbers|from_json if booking.seat_numbers else [] %}
+                                {{ seat_numbers|join(', ') }}
+                            </div>
+                            <div class="seat-count">
+                                <strong>Number of Seats: </strong>{{ booking.seats_booked }}
+                            </div>
+                        </div>
+
+                        <div class="customer-info">
+                            <h3>
+                                <i class="fas fa-user"></i>
+                                Customer Details
+                            </h3>
+                            <div class="customer-details">
+                                <div class="customer-detail">
+                                    <strong>Name:</strong> {{ booking.customer_name }}
+                                </div>
+                                <div class="customer-detail">
+                                    <strong>Email:</strong> {{ booking.customer_email }}
+                                </div>
+                                <div class="customer-detail">
+                                    <strong>Phone:</strong> {{ booking.customer_phone }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="payment-info">
+                            <h3>
+                                <i class="fas fa-receipt"></i>
+                                Payment Details
+                            </h3>
+                            <div class="payment-details">
+                                <div class="payment-row">
+                                    <span>Price per Seat:</span>
+                                    <span>₹{{ "%.0f"|format(booking.price) }}</span>
+                                </div>
+                                <div class="payment-row">
+                                    <span>Number of Seats:</span>
+                                    <span>{{ booking.seats_booked }}</span>
+                                </div>
+                                <div class="payment-row total">
+                                    <span>Total Amount:</span>
+                                    <span>₹{{ "%.0f"|format(booking.total_amount) }}</span>
+                                </div>
+                                <div class="payment-status">
+                                    <i class="fas fa-check-circle"></i>
+                                    <span>Payment Confirmed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ticket-footer">
+                        <div class="booking-time">
+                            <strong>Booked on:</strong>
+                            {{ booking.booking_date.strftime('%B %d, %Y at %I:%M %p') }}
+                        </div>
+                        <div class="ticket-qr">
+                            <div class="qr-placeholder">
+                                <i class="fas fa-qrcode"></i>
+                                <small>QR Code</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ticket-perforations"></div>
+            </div>
+        </div>
+
+        <div class="important-notes">
+            <h3>
+                <i class="fas fa-info-circle"></i>
+                Important Instructions
+            </h3>
+            <ul>
+                <li>Please arrive at the theater at least 15 minutes before the show time</li>
+                <li>Carry a valid ID proof for verification</li>
+                <li>Present this booking confirmation at the theater entrance</li>
+                <li>Outside food and beverages are not allowed inside the theater</li>
+                <li>Mobile phones should be switched off during the movie</li>
+                <li>Refunds are not allowed for confirmed bookings</li>
+            </ul>
+        </div>
+
+        <div class="success-actions">
+            <button class="btn btn-primary" onclick="window.print()">
+                <i class="fas fa-print"></i>
+                Print Ticket
+            </button>
+            <button class="btn btn-outline" onclick="downloadTicket()">
+                <i class="fas fa-download"></i>
+                Download PDF
+            </button>
+            <a href="{{ url_for('home') }}" class="btn btn-secondary">
+                <i class="fas fa-home"></i>
+                Back to Home
+            </a>
+        </div>
+
+        <div class="contact-support">
+            <p>
+                <i class="fas fa-question-circle"></i>
+                Need help? Contact our support team at 
+                <a href="mailto:support@moviehub.com">support@moviehub.com</a> 
+                or call <a href="tel:+12345678900">+1 234 567 8900</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function downloadTicket() {
+    // In a real application, this would generate and download a PDF
+    alert('PDF download feature will be implemented with a PDF library like jsPDF or server-side PDF generation.');
+}
+
+// Print styles are handled in CSS
+window.addEventListener('beforeprint', function() {
+    document.body.classList.add('printing');
+});
+
+window.addEventListener('afterprint', function() {
+    document.body.classList.remove('printing');
+});
+</script>
+{% endblock %}

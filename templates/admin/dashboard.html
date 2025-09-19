@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - MovieHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1><i class="fas fa-cog"></i> Admin Dashboard</h1>
+            <p>Manage your cinema operations from one central location</p>
+        </div>
+
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-film"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Movies</h3>
+                    <p>Manage movie listings, details, and schedules</p>
+                </div>
+                <div class="stat-action">
+                    <a href="{{ url_for('admin_movies') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-building"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Theaters</h3>
+                    <p>Add and manage theater locations and seating</p>
+                </div>
+                <div class="stat-action">
+                    <a href="{{ url_for('admin_theaters') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Shows</h3>
+                    <p>Schedule shows and manage timings</p>
+                </div>
+                <div class="stat-action">
+                    <a href="{{ url_for('admin_shows') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>Bookings</h3>
+                    <p>View and manage customer bookings</p>
+                </div>
+                <div class="stat-action">
+                    <a href="{{ url_for('admin_bookings') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <h2><i class="fas fa-bolt"></i> Quick Actions</h2>
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="showAddMovieModal()">
+                    <i class="fas fa-plus"></i>
+                    Add New Movie
+                </button>
+                <button class="btn btn-success" onclick="showAddTheaterModal()">
+                    <i class="fas fa-plus"></i>
+                    Add New Theater
+                </button>
+                <button class="btn btn-success" onclick="showAddShowModal()">
+                    <i class="fas fa-plus"></i>
+                    Schedule Show
+                </button>
+            </div>
+        </div>
+
+        <div class="dashboard-info">
+            <div class="info-section">
+                <h2><i class="fas fa-info-circle"></i> System Information</h2>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>Database Status:</strong>
+                        <span class="status-active">
+                            <i class="fas fa-circle"></i>
+                            Active
+                        </span>
+                    </div>
+                    <div class="info-item">
+                        <strong>Last Updated:</strong>
+                        <span>{{ moment().format('MMMM DD, YYYY') }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h2><i class="fas fa-question-circle"></i> Help & Support</h2>
+                <ul class="help-links">
+                    <li><a href="#" onclick="showHelpModal()"><i class="fas fa-book"></i> User Guide</a></li>
+                    <li><a href="mailto:admin@moviehub.com"><i class="fas fa-envelope"></i> Contact Support</a></li>
+                    <li><a href="#" onclick="showSystemInfo()"><i class="fas fa-server"></i> System Information</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div id="helpModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-question-circle"></i> Help & Support</h3>
+            <span class="close" onclick="closeModal('helpModal')">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="help-content">
+                <h4>Getting Started</h4>
+                <ul>
+                    <li><strong>Movies:</strong> Add movies with details like title, description, duration, genre, and poster images</li>
+                    <li><strong>Theaters:</strong> Set up theater locations with seating capacity</li>
+                    <li><strong>Shows:</strong> Schedule movie shows with specific dates, times, and pricing</li>
+                    <li><strong>Bookings:</strong> Monitor customer bookings and manage reservations</li>
+                </ul>
+                
+                <h4>Best Practices</h4>
+                <ul>
+                    <li>Update movie information regularly</li>
+                    <li>Schedule shows in advance</li>
+                    <li>Monitor booking patterns for optimal scheduling</li>
+                    <li>Keep theater information up to date</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showAddMovieModal() {
+    window.location.href = '{{ url_for("admin_movies") }}';
+}
+
+function showAddTheaterModal() {
+    window.location.href = '{{ url_for("admin_theaters") }}';
+}
+
+function showAddShowModal() {
+    window.location.href = '{{ url_for("admin_shows") }}';
+}
+
+function showHelpModal() {
+    document.getElementById('helpModal').style.display = 'block';
+}
+
+function showSystemInfo() {
+    alert('MovieHub Admin System v1.0\nFlask Backend with MySQL Database\nBuilt with HTML, CSS, JavaScript');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+}
+</script>
+{% endblock %}

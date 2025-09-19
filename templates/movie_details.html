@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} - MovieHub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="movie-details-container">
+        <!-- Movie Header -->
+        <div class="movie-header">
+            <div class="movie-poster-large">
+                {% if movie.image_url %}
+                    <img src="{{ movie.image_url }}" alt="{{ movie.title }}" onerror="this.src='{{ url_for('static', filename='images/default-movie.jpg') }}'">
+                {% else %}
+                    <img src="{{ url_for('static', filename='images/default-movie.jpg') }}" alt="{{ movie.title }}">
+                {% endif %}
+            </div>
+            
+            <div class="movie-details">
+                <h1>{{ movie.title }}</h1>
+                
+                <div class="movie-meta-large">
+                    <div class="meta-item">
+                        <i class="fas fa-tags"></i>
+                        <span>{{ movie.genre }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        <span>{{ movie.duration }} mins</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-language"></i>
+                        <span>{{ movie.language }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>{{ movie.release_date.strftime('%B %d, %Y') if movie.release_date and movie.release_date.__class__.__name__ == 'date' else 'TBA' }}</span>
+                    </div>
+                </div>
+                
+                <div class="movie-rating-large">
+                    <div class="stars-large">
+                        {% set rating = movie.avg_rating|round %}
+                        {% for i in range(1, 6) %}
+                            {% if i <= rating %}
+                                <i class="fas fa-star"></i>
+                            {% else %}
+                                <i class="far fa-star"></i>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <span class="rating-text-large">
+                        {{ "%.1f"|format(movie.avg_rating) }}/5
+                        ({{ movie.review_count }} reviews)
+                    </span>
+                </div>
+                
+                <p class="movie-description-large">{{ movie.description }}</p>
+            </div>
+        </div>
+
+        <!-- Shows Section -->
+        <div class="shows-section">
+            <h2><i class="fas fa-calendar-alt"></i> Show Times & Book Tickets</h2>
+            
+            {% if shows %}
+                <div class="shows-container">
+                    {% set current_date = None %}
+                    {% for show in shows %}
+                        {% if show.show_date != current_date %}
+                            {% if current_date is not none %}
+                                </div> <!-- Close previous day's shows -->
+                            {% endif %}
+                            {% set current_date = show.show_date %}
+                            <div class="show-date">
+                                <h3>
+                                    <i class="fas fa-calendar"></i>
+                                    {{ show.show_date.strftime('%A, %B %d, %Y') }}
+                                </h3>
+                                <div class="show-times">
+                        {% endif %}
+                        
+                        <div class="show-card">
+                            <div class="show-info">
+                                <div class="show-time">
+                                    <i class="fas fa-clock"></i>
+                                    {{ show.show_time.strftime('%I:%M %p') }}
+                                </div>
+                                <div class="theater-info">
+                                    <div class="theater-name">
+                                        <i class="fas fa-building"></i>
+                                        {{ show.theater_name }}
+                                    </div>
+                                    <div class="theater-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ show.location }}
+                                    </div>
+                                </div>
+                                <div class="show-price">
+                                    <i class="fas fa-rupee-sign"></i>
+                                    ₹{{ "%.0f"|format(show.price) }}
+                                </div>
+                                <div class="available-seats">
+                                    <i class="fas fa-couch"></i>
+                                    {{ show.available_seats }} seats available
+                                </div>
+                            </div>
+                            
+                            <div class="show-actions">
+                                {% if show.available_seats > 0 %}
+                                    <a href="{{ url_for('book_seats', show_id=show.id) }}" class="btn btn-primary">
+                                        <i class="fas fa-ticket-alt"></i> Book Tickets
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-disabled" disabled>
+                                        <i class="fas fa-times"></i> Sold Out
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    {% if shows %}
+                        </div> <!-- Close last day's shows -->
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="no-shows">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>No Shows Available</h3>
+                    <p>Please check back later for show times</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Reviews Section -->
+        <div class="reviews-section">
+            <div class="reviews-header">
+                <h2><i class="fas fa-star"></i> Reviews & Ratings</h2>
+                <button class="btn btn-outline" onclick="showReviewModal()">
+                    <i class="fas fa-plus"></i> Write Review
+                </button>
+            </div>
+            
+            <div class="reviews-container">
+                {% for review in reviews %}
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer-name">
+                            <i class="fas fa-user-circle"></i>
+                            {{ review.customer_name }}
+                        </div>
+                        <div class="review-rating">
+                            {% for i in range(1, 6) %}
+                                {% if i <= review.rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="review-date">
+                            {{ review.created_at.strftime('%B %d, %Y') }}
+                        </div>
+                    </div>
+                    <p class="review-text">{{ review.review_text }}</p>
+                </div>
+                {% endfor %}
+                
+                {% if not reviews %}
+                <div class="no-reviews">
+                    <i class="fas fa-comment"></i>
+                    <h3>No Reviews Yet</h3>
+                    <p>Be the first to review this movie!</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Review Modal -->
+<div id="reviewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-star"></i> Write a Review</h3>
+            <span class="close" onclick="closeReviewModal()">&times;</span>
+        </div>
+        
+        <form id="reviewForm" class="modal-form">
+            <input type="hidden" id="movieId" value="{{ movie.id }}">
+            
+            <div class="form-group">
+                <label for="customerName">Your Name</label>
+                <input type="text" id="customerName" name="customer_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="rating">Rating</label>
+                <div class="star-rating">
+                    <input type="radio" name="rating" value="5" id="star5">
+                    <label for="star5"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" value="4" id="star4">
+                    <label for="star4"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" value="3" id="star3">
+                    <label for="star3"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" value="2" id="star2">
+                    <label for="star2"><i class="fas fa-star"></i></label>
+                    <input type="radio" name="rating" value="1" id="star1">
+                    <label for="star1"><i class="fas fa-star"></i></label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="reviewText">Your Review</label>
+                <textarea id="reviewText" name="review_text" rows="4" required></textarea>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="closeReviewModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Submit Review
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showReviewModal() {
+    document.getElementById('reviewModal').style.display = 'block';
+}
+
+function closeReviewModal() {
+    document.getElementById('reviewModal').style.display = 'none';
+    document.getElementById('reviewForm').reset();
+}
+
+// Handle review form submission
+document.getElementById('reviewForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const rating = document.querySelector('input[name="rating"]:checked');
+    
+    if (!rating) {
+        alert('Please select a rating');
+        return;
+    }
+    
+    const reviewData = {
+        movie_id: document.getElementById('movieId').value,
+        customer_name: formData.get('customer_name'),
+        rating: parseInt(rating.value),
+        review_text: formData.get('review_text')
+    };
+    
+    try {
+        const response = await fetch('/add_review', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(reviewData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Review submitted successfully!');
+            location.reload();
+        } else {
+            alert('Error submitting review: ' + result.message);
+        }
+    } catch (error) {
+        alert('Error submitting review. Please try again.');
+    }
+    
+    closeReviewModal();
+});
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('reviewModal');
+    if (event.target === modal) {
+        closeReviewModal();
+    }
+}
+</script>
+{% endblock %}

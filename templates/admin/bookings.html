@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Bookings - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="header-left">
+                <h1><i class="fas fa-ticket-alt"></i> Manage Bookings</h1>
+                <p>View and manage customer bookings</p>
+            </div>
+            <div class="header-right">
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+
+        {% if bookings %}
+        <div class="bookings-stats">
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ bookings|length }}</h3>
+                    <p>Total Bookings</p>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>₹{{ "%.0f"|format(bookings|sum(attribute='total_amount')) }}</h3>
+                    <p>Total Revenue</p>
+                </div>
+            </div>
+            
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <i class="fas fa-couch"></i>
+                </div>
+                <div class="stat-content">
+                    <h3>{{ bookings|sum(attribute='seats_booked') }}</h3>
+                    <p>Seats Booked</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bookings-table-container">
+            <div class="table-header">
+                <h3><i class="fas fa-list"></i> Recent Bookings</h3>
+                <div class="table-filters">
+                    <input type="text" id="searchBookings" placeholder="Search by name or email..." class="search-input">
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">All Status</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="admin-table" id="bookingsTable">
+                    <thead>
+                        <tr>
+                            <th>Booking ID</th>
+                            <th>Customer</th>
+                            <th>Movie</th>
+                            <th>Theater</th>
+                            <th>Show Details</th>
+                            <th>Seats</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in bookings %}
+                        <tr>
+                            <td>
+                                <strong>#{{ booking.id }}</strong>
+                            </td>
+                            <td>
+                                <div class="customer-cell">
+                                    <strong>{{ booking.customer_name }}</strong>
+                                    <small>{{ booking.customer_email }}</small>
+                                    <small>{{ booking.customer_phone }}</small>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="movie-cell">
+                                    <strong>{{ booking.title }}</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="theater-cell">
+                                    <strong>{{ booking.theater_name }}</strong>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="show-cell">
+                                    <div class="show-date">{{ booking.show_date.strftime('%Y-%m-%d') }}</div>
+                                    <div class="show-time">{{ booking.show_time.strftime('%I:%M %p') }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="seats-cell">
+                                    <span class="seat-count">{{ booking.seats_booked }} seats</span>
+                                    {% if booking.seat_numbers %}
+                                        {% set seat_numbers = booking.seat_numbers|from_json %}
+                                        <small class="seat-numbers">{{ seat_numbers|join(', ') }}</small>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="amount-cell">₹{{ "%.0f"|format(booking.total_amount) }}</span>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ booking.status }}">
+                                    {% if booking.status == 'confirmed' %}
+                                        <i class="fas fa-check-circle"></i>
+                                    {% else %}
+                                        <i class="fas fa-times-circle"></i>
+                                    {% endif %}
+                                    {{ booking.status.title() }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-icon btn-view" onclick="viewBooking({{ booking.id }})" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    {% if booking.status == 'confirmed' %}
+                                    <button class="btn-icon btn-cancel" onclick="cancelBooking({{ booking.id }})" title="Cancel Booking">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                    {% endif %}
+                                    <button class="btn-icon btn-print" onclick="printTicket({{ booking.id }})" title="Print Ticket">
+                                        <i class="fas fa-print"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <i class="fas fa-ticket-alt"></i>
+            <h3>No Bookings Found</h3>
+            <p>Customer bookings will appear here once they start booking tickets</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Booking Details Modal -->
+<div id="bookingDetailsModal" class="modal">
+    <div class="modal-content modal-large">
+        <div class="modal-header">
+            <h3><i class="fas fa-ticket-alt"></i> Booking Details</h3>
+            <span class="close" onclick="closeModal('bookingDetailsModal')">&times;</span>
+        </div>
+        <div class="modal-body" id="bookingDetailsContent">
+            <!-- Content will be loaded dynamically -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function viewBooking(bookingId) {
+    // In a real application, this would fetch booking details via API
+    const modal = document.getElementById('bookingDetailsModal');
+    const content = document.getElementById('bookingDetailsContent');
+    
+    content.innerHTML = `
+        <div class="booking-details-loading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading booking details...</p>
+        </div>
+    `;
+    
+    modal.style.display = 'block';
+    
+    // Simulate API call
+    setTimeout(() => {
+        content.innerHTML = `
+            <div class="booking-details">
+                <h4>Booking #${bookingId}</h4>
+                <p>Detailed booking information would be displayed here in a real application.</p>
+                <div class="booking-actions">
+                    <button class="btn btn-primary" onclick="printTicket(${bookingId})">
+                        <i class="fas fa-print"></i> Print Ticket
+                    </button>
+                    <button class="btn btn-outline" onclick="closeModal('bookingDetailsModal')">Close</button>
+                </div>
+            </div>
+        `;
+    }, 1000);
+}
+
+function cancelBooking(bookingId) {
+    if (confirm('Are you sure you want to cancel this booking? This action cannot be undone.')) {
+        alert(`Cancel booking functionality for booking ${bookingId} would be implemented here`);
+    }
+}
+
+function printTicket(bookingId) {
+    // In a real application, this would generate and print the ticket
+    window.open(`/booking_success/${bookingId}`, '_blank');
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Search functionality
+document.getElementById('searchBookings').addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase();
+    const tableRows = document.querySelectorAll('#bookingsTable tbody tr');
+    
+    tableRows.forEach(row => {
+        const customerName = row.cells[1].textContent.toLowerCase();
+        const movieTitle = row.cells[2].textContent.toLowerCase();
+        const theaterName = row.cells[3].textContent.toLowerCase();
+        
+        if (customerName.includes(searchTerm) || movieTitle.includes(searchTerm) || theaterName.includes(searchTerm)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+// Status filter
+document.getElementById('statusFilter').addEventListener('change', function() {
+    const selectedStatus = this.value.toLowerCase();
+    const tableRows = document.querySelectorAll('#bookingsTable tbody tr');
+    
+    tableRows.forEach(row => {
+        const status = row.cells[7].textContent.toLowerCase();
+        
+        if (selectedStatus === '' || status.includes(selectedStatus)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+});
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        if (event.target === modal) {
+            closeModal(modal.id);
+        }
+    });
+}
+</script>
+{% endblock %}

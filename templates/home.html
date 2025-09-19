@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}MovieHub - Latest Movies{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h1><i class="fas fa-film"></i> Welcome to MovieHub</h1>
+        <p>Book your favorite movies in the best theaters near you</p>
+    </div>
+</div>
+
+<div class="container">
+    <section class="movies-section">
+        <div class="section-header">
+            <h2><i class="fas fa-star"></i> Now Showing</h2>
+            <p>Discover the latest movies and book your tickets instantly</p>
+        </div>
+
+        <div class="movies-grid">
+            {% for movie in movies %}
+            <div class="movie-card">
+                <div class="movie-poster">
+                    {% if movie.image_url %}
+                        <img src="{{ movie.image_url }}" alt="{{ movie.title }}" onerror="this.src='{{ url_for('static', filename='images/default-movie.jpg') }}'">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/default-movie.jpg') }}" alt="{{ movie.title }}">
+                    {% endif %}
+                    <div class="movie-overlay">
+                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-primary">
+                            <i class="fas fa-ticket-alt"></i> Book Now
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="movie-info">
+                    <h3>{{ movie.title }}</h3>
+                    <div class="movie-meta">
+                        <span class="genre">
+                            <i class="fas fa-tags"></i>
+                            {{ movie.genre }}
+                        </span>
+                        <span class="duration">
+                            <i class="fas fa-clock"></i>
+                            {{ movie.duration }} mins
+                        </span>
+                        <span class="language">
+                            <i class="fas fa-language"></i>
+                            {{ movie.language }}
+                        </span>
+                    </div>
+                    
+                    <div class="movie-rating">
+                        <div class="stars">
+                            {% set rating = movie.avg_rating|round %}
+                            {% for i in range(1, 6) %}
+                                {% if i <= rating %}
+                                    <i class="fas fa-star"></i>
+                                {% else %}
+                                    <i class="far fa-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <span class="rating-text">
+                            {{ "%.1f"|format(movie.avg_rating) }}
+                            ({{ movie.review_count }} reviews)
+                        </span>
+                    </div>
+                    
+                    <p class="movie-description">{{ movie.description[:100] }}{% if movie.description|length > 100 %}...{% endif %}</p>
+                    
+                    <div class="movie-actions">
+                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-outline">
+                            <i class="fas fa-info-circle"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% if not movies %}
+            <div class="no-movies">
+                <i class="fas fa-film"></i>
+                <h3>No Movies Available</h3>
+                <p>Check back later for new movie releases</p>
+                <a href="{{ url_for('admin_movies') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Movies (Admin)
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Featured Section -->
+    <section class="featured-section">
+        <div class="section-header">
+            <h2><i class="fas fa-fire"></i> Why Choose MovieHub?</h2>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+                <h3>Easy Booking</h3>
+                <p>Book your tickets in just a few clicks with our user-friendly interface</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-couch"></i>
+                </div>
+                <h3>Seat Selection</h3>
+                <p>Choose your preferred seats with our interactive seat map</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3>Reviews & Ratings</h3>
+                <p>Read reviews and ratings from other movie lovers</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-mobile-alt"></i>
+                </div>
+                <h3>Mobile Friendly</h3>
+                <p>Access MovieHub on any device, anywhere, anytime</p>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
