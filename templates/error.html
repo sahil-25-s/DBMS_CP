@@ -4,10 +4,10 @@
 
 {% block content %}
 <div class="container">
-    <div class="error-container">
+    <div class="error-container animate-fade-in-up">
         <div class="error-content">
-            <div class="error-icon">
-                <i class="fas fa-exclamation-triangle"></i>
+            <div class="error-icon animate-pulse">
+                ⚠️
             </div>
             
             <h1>Oops! Something went wrong</h1>
@@ -17,41 +17,95 @@
             </div>
             
             <div class="error-actions">
-                <a href="{{ url_for('home') }}" class="btn btn-primary">
-                    <i class="fas fa-home"></i>
-                    Go Home
+                <a href="{{ url_for('home') }}" class="btn btn-primary hover-glow">
+                    🏠 Go Home
                 </a>
                 
-                <button class="btn btn-outline" onclick="history.back()">
-                    <i class="fas fa-arrow-left"></i>
-                    Go Back
+                <button class="btn btn-outline hover-scale" onclick="history.back()">
+                    ← Go Back
                 </button>
                 
-                <button class="btn btn-secondary" onclick="location.reload()">
-                    <i class="fas fa-redo"></i>
-                    Try Again
+                <button class="btn btn-outline hover-scale" onclick="location.reload()">
+                    🔄 Try Again
                 </button>
             </div>
             
             <div class="error-support">
                 <p>
-                    <i class="fas fa-life-ring"></i>
-                    Need help? Contact our support team at 
+                    🆘 Need help? Contact our support team at 
                     <a href="mailto:support@moviehub.com">support@moviehub.com</a>
                 </p>
             </div>
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block scripts %}
-<script>
-// Auto redirect to home page after 10 seconds if user doesn't take action
-setTimeout(function() {
-    if (confirm('Would you like to return to the home page?')) {
-        window.location.href = '{{ url_for("home") }}';
+<style>
+.error-container {
+    max-width: 600px;
+    margin: 5rem auto;
+    text-align: center;
+    padding: 3rem;
+}
+
+.error-content {
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 4rem 3rem;
+    color: white;
+}
+
+.error-icon {
+    font-size: 5rem;
+    margin-bottom: 2rem;
+    display: block;
+}
+
+.error-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: white;
+}
+
+.error-message {
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.error-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+}
+
+.error-support {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.error-support a {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .error-actions {
+        flex-direction: column;
+        align-items: center;
     }
-}, 10000);
-</script>
+    
+    .error-content {
+        padding: 2rem 1.5rem;
+    }
+    
+    .error-content h1 {
+        font-size: 2rem;
+    }
+}
+</style>
 {% endblock %}

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}MovieHub - Book Your Entertainment{% endblock %}</title>
+    <title>{% block title %}MovieHub - Premium Cinema Experience{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/animations.css') }}">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -17,19 +17,16 @@
         <div class="nav-container">
             <div class="nav-brand">
                 <a href="{{ url_for('home') }}">
-                    <i class="fas fa-film"></i>
-                    MovieHub
+                    🎬 MovieHub
                 </a>
             </div>
             
             <div class="nav-menu">
                 <a href="{{ url_for('home') }}" class="nav-link">
-                    <i class="fas fa-home"></i>
-                    Home
+                    🏠 Home
                 </a>
-                <a href="{{ url_for('admin_dashboard') }}" class="nav-link admin-link">
-                    <i class="fas fa-cog"></i>
-                    Admin
+                <a href="{{ url_for('admin_dashboard') }}" class="nav-link">
+                    ⚙️ Admin
                 </a>
             </div>
         </div>
@@ -40,7 +37,7 @@
         {% if messages %}
             <div class="flash-messages">
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
+                    <div class="alert alert-{{ category }} animate-slide-in-right">
                         <span>{{ message }}</span>
                         <button class="alert-close" onclick="this.parentElement.remove()">×</button>
                     </div>
@@ -56,29 +53,31 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3><i class="fas fa-film"></i> MovieHub</h3>
-                <p>Your one-stop destination for movie bookings.</p>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>🎬 MovieHub</h3>
+                    <p>Your premium destination for movie bookings and entertainment.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{{ url_for('home') }}">Movies</a></li>
+                        <li><a href="{{ url_for('admin_dashboard') }}">Admin Panel</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p>📧 hello@moviehub.com</p>
+                    <p>📞 +1 (555) 123-4567</p>
+                </div>
             </div>
             
-            <div class="footer-section">
-                <h4>Quick Links</h4>
-                <ul>
-                    <li><a href="{{ url_for('home') }}">Movies</a></li>
-                    <li><a href="{{ url_for('admin_dashboard') }}">Admin</a></li>
-                </ul>
+            <div class="footer-bottom">
+                <p>&copy; 2024 MovieHub. Crafted with ❤️</p>
             </div>
-            
-            <div class="footer-section">
-                <h4>Contact</h4>
-                <p><i class="fas fa-envelope"></i> info@moviehub.com</p>
-                <p><i class="fas fa-phone"></i> +1 234 567 8900</p>
-            </div>
-        </div>
-        
-        <div class="footer-bottom">
-            <p>&copy; 2024 MovieHub. All rights reserved.</p>
         </div>
     </footer>
 
