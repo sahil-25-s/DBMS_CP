@@ -5,21 +5,24 @@
 {% block content %}
 <div class="hero-section">
     <div class="hero-content">
-        <h1><i class="fas fa-film"></i> Welcome to MovieHub</h1>
-        <p>Book your favorite movies in the best theaters near you</p>
+        <h1 class="animate-fade-in-up">🎬 MovieHub</h1>
+        <p class="animate-fade-in-up stagger-2">Experience cinema like never before</p>
+        <div class="animate-fade-in-up stagger-3">
+            <a href="#movies" class="btn btn-primary hover-glow">Explore Movies</a>
+        </div>
     </div>
 </div>
 
 <div class="container">
-    <section class="movies-section">
+    <section class="movies-section" id="movies">
         <div class="section-header">
-            <h2><i class="fas fa-star"></i> Now Showing</h2>
-            <p>Discover the latest movies and book your tickets instantly</p>
+            <h2 class="animate-fade-in-up">✨ Now Showing</h2>
+            <p class="animate-fade-in-up stagger-1">Discover the latest movies and book your tickets instantly</p>
         </div>
 
         <div class="movies-grid">
             {% for movie in movies %}
-            <div class="movie-card animate-fade-in-up" style="animation-delay: {{ loop.index0 * 0.1 }}s">
+            <div class="movie-card animate-zoom-in hover-lift stagger-{{ loop.index }}" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 100 }}">
                 <div class="movie-poster">
                     {% if movie.image_url %}
                         <img src="{{ movie.image_url }}" alt="{{ movie.title }}" onerror="this.src='{{ url_for('static', filename='images/default-movie.jpg') }}'">
@@ -27,8 +30,8 @@
                         <img src="{{ url_for('static', filename='images/default-movie.jpg') }}" alt="{{ movie.title }}">
                     {% endif %}
                     <div class="movie-overlay">
-                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-primary">
-                            <i class="fas fa-ticket-alt"></i> Book Now
+                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-primary hover-glow">
+                            🎫 Book Now
                         </a>
                     </div>
                 </div>
@@ -70,8 +73,8 @@
                     <p class="movie-description">{{ movie.description[:100] }}{% if movie.description|length > 100 %}...{% endif %}</p>
                     
                     <div class="movie-actions">
-                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-outline">
-                            <i class="fas fa-info-circle"></i> View Details
+                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-outline hover-scale">
+                            📝 View Details
                         </a>
                     </div>
                 </div>
@@ -94,37 +97,37 @@
     <!-- Featured Section -->
     <section class="featured-section">
         <div class="section-header">
-            <h2><i class="fas fa-fire"></i> Why Choose MovieHub?</h2>
+            <h2 class="animate-fade-in-up">🔥 Why Choose MovieHub?</h2>
         </div>
         
         <div class="features-grid">
-            <div class="feature-card animate-slide-in-left" style="animation-delay: 0s">
-                <div class="feature-icon">
-                    <i class="fas fa-ticket-alt"></i>
+            <div class="feature-card animate-slide-in-left stagger-1 hover-lift">
+                <div class="feature-icon animate-float">
+                    🎫
                 </div>
                 <h3>Easy Booking</h3>
                 <p>Book your tickets in just a few clicks with our user-friendly interface</p>
             </div>
             
-            <div class="feature-card animate-slide-in-left" style="animation-delay: 0.2s">
-                <div class="feature-icon">
-                    <i class="fas fa-couch"></i>
+            <div class="feature-card animate-slide-in-left stagger-2 hover-lift">
+                <div class="feature-icon animate-float">
+                    🛋️
                 </div>
                 <h3>Seat Selection</h3>
                 <p>Choose your preferred seats with our interactive seat map</p>
             </div>
             
-            <div class="feature-card animate-slide-in-left" style="animation-delay: 0.4s">
-                <div class="feature-icon">
-                    <i class="fas fa-star"></i>
+            <div class="feature-card animate-slide-in-left stagger-3 hover-lift">
+                <div class="feature-icon animate-float">
+                    ⭐
                 </div>
                 <h3>Reviews & Ratings</h3>
                 <p>Read reviews and ratings from other movie lovers</p>
             </div>
             
-            <div class="feature-card animate-slide-in-left" style="animation-delay: 0.6s">
-                <div class="feature-icon">
-                    <i class="fas fa-mobile-alt"></i>
+            <div class="feature-card animate-slide-in-left stagger-4 hover-lift">
+                <div class="feature-icon animate-float">
+                    📱
                 </div>
                 <h3>Mobile Friendly</h3>
                 <p>Access MovieHub on any device, anywhere, anytime</p>
