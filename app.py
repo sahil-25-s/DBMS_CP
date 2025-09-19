@@ -340,7 +340,7 @@ def add_review():
 # Admin Routes
 @app.route('/admin')
 def admin_dashboard():
-    return render_template('admin/dashboard.html')
+    return render_template('admin/dashboard.html', datetime=datetime)
 
 @app.route('/admin/movies')
 def admin_movies():

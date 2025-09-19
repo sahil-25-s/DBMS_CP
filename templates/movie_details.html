@@ -74,7 +74,7 @@
                             <div class="show-date">
                                 <h3>
                                     <i class="fas fa-calendar"></i>
-                                    {{ show.show_date.strftime('%A, %B %d, %Y') }}
+                                    {{ show.show_date.strftime('%A, %B %d, %Y') if show.show_date and show.show_date.__class__.__name__ == 'date' else show.show_date }}
                                 </h3>
                                 <div class="show-times">
                         {% endif %}
@@ -83,7 +83,7 @@
                             <div class="show-info">
                                 <div class="show-time">
                                     <i class="fas fa-clock"></i>
-                                    {{ show.show_time.strftime('%I:%M %p') }}
+                                    {{ show.show_time.strftime('%I:%M %p') if show.show_time and show.show_time.__class__.__name__ in ['time', 'datetime'] else show.show_time }}
                                 </div>
                                 <div class="theater-info">
                                     <div class="theater-name">
