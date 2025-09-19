@@ -12,10 +12,11 @@ app.config['UPLOAD_FOLDER'] = 'static/images/movies'
 
 # Database configuration
 db_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'root',  # Update with your MySQL password
-    'database': 'movie_booking_system',
+    'host': os.environ.get('DB_HOST', 'localhost'),
+    'user': os.environ.get('DB_USER', 'root'),
+    'password': os.environ.get('DB_PASSWORD', 'root'),
+    'database': os.environ.get('DB_NAME', 'movie_booking_system'),
+    'port': int(os.environ.get('DB_PORT', 3306)),
     'autocommit': True
 }
 
@@ -131,19 +132,36 @@ def init_database():
 def home():
     connection = get_db_connection()
     if not connection:
-        return render_template('error.html', message="Database connection error")
+        # Fallback with sample data when database is not available
+        sample_movies = [
+            {
+                'id': 1,
+                'title': 'Sample Movie',
+                'description': 'Database not connected. Please configure environment variables.',
+                'genre': 'Demo',
+                'duration': 120,
+                'language': 'English',
+                'avg_rating': 4.5,
+                'review_count': 0,
+                'image_url': 'https://via.placeholder.com/300x400?text=No+Database'
+            }
+        ]
+        return render_template('home.html', movies=sample_movies)
     
     cursor = connection.cursor(dictionary=True)
     
-    # Get all movies with their ratings
-    cursor.execute("""
-        SELECT m.*, COALESCE(AVG(r.rating), 0) as avg_rating, COUNT(r.id) as review_count
-        FROM movies m
-        LEFT JOIN reviews r ON m.id = r.movie_id
-        GROUP BY m.id
-        ORDER BY m.created_at DESC
-    """)
-    movies = cursor.fetchall()
+    try:
+        # Get all movies with their ratings
+        cursor.execute("""
+            SELECT m.*, COALESCE(AVG(r.rating), 0) as avg_rating, COUNT(r.id) as review_count
+            FROM movies m
+            LEFT JOIN reviews r ON m.id = r.movie_id
+            GROUP BY m.id
+            ORDER BY m.created_at DESC
+        """)
+        movies = cursor.fetchall()
+    except:
+        movies = []
     
     cursor.close()
     connection.close()
@@ -531,7 +549,16 @@ def admin_bookings():
     
     return render_template('admin/bookings.html', bookings=bookings)
 
+@app.route('/init-db')
+def init_db_route():
+    """Initialize database remotely for cloud deployment"""
+    if init_database():
+        return jsonify({'success': True, 'message': 'Database initialized successfully'})
+    else:
+        return jsonify({'success': False, 'message': 'Database initialization failed'})
+
 if __name__ == '__main__':
-    # Initialize database on startup
-    init_database()
+    # Initialize database on startup for local development
+    if os.environ.get('DB_HOST') == 'localhost':
+        init_database()
     app.run(debug=True, port=5000)
