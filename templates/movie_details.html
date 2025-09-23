@@ -62,7 +62,7 @@
                     <div class="show-seats">{{ show.available_seats }} seats</div>
                     
                     {% if show.available_seats > 0 %}
-                        <a href="{{ url_for('book_seats', show_id=show.id) }}" class="btn btn-primary hover-glow">
+                        <a href="/book_seats/{{ show.id }}" class="btn btn-primary hover-glow">
                             Book Now
                         </a>
                     {% else %}
@@ -503,7 +503,7 @@ document.getElementById('reviewForm').addEventListener('submit', async function(
     };
     
     try {
-        const response = await fetch('/add_review', {
+        const response = await fetch('/api/add_review', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(reviewData)

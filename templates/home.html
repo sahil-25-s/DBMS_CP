@@ -25,12 +25,12 @@
             <div class="movie-card animate-zoom-in hover-lift stagger-{{ loop.index }}" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 100 }}">
                 <div class="movie-poster">
                     {% if movie.image_url %}
-                        <img src="{{ movie.image_url }}" alt="{{ movie.title }}" onerror="this.src='{{ url_for('static', filename='images/default-movie.jpg') }}'">
+                        <img src="{{ movie.image_url }}" alt="{{ movie.title }}" onerror="this.src='/static/images/default-movie.jpg'">
                     {% else %}
-                        <img src="{{ url_for('static', filename='images/default-movie.jpg') }}" alt="{{ movie.title }}">
+                        <img src="/static/images/default-movie.jpg" alt="{{ movie.title }}">
                     {% endif %}
                     <div class="movie-overlay">
-                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-primary hover-glow">
+                        <a href="/movie/{{ movie.id }}" class="btn btn-primary hover-glow">
                             🎫 Book Now
                         </a>
                     </div>
@@ -73,7 +73,7 @@
                     <p class="movie-description">{{ movie.description[:100] }}{% if movie.description|length > 100 %}...{% endif %}</p>
                     
                     <div class="movie-actions">
-                        <a href="{{ url_for('movie_details', movie_id=movie.id) }}" class="btn btn-outline hover-scale">
+                        <a href="/movie/{{ movie.id }}" class="btn btn-outline hover-scale">
                             📝 View Details
                         </a>
                     </div>
@@ -86,7 +86,7 @@
                 <i class="fas fa-film"></i>
                 <h3>No Movies Available</h3>
                 <p>Check back later for new movie releases</p>
-                <a href="{{ url_for('admin_movies') }}" class="btn btn-primary">
+                <a href="/admin/movies" class="btn btn-primary">
                     <i class="fas fa-plus"></i> Add Movies (Admin)
                 </a>
             </div>

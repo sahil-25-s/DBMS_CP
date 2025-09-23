@@ -481,7 +481,7 @@ document.getElementById('bookingForm').addEventListener('submit', async function
     };
     
     try {
-        const response = await fetch('/confirm_booking', {
+        const response = await fetch('/api/book_tickets', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(bookingData)

@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, flash, redirect, url_for
+from flask import render_template, request, jsonify, flash, redirect
 from datetime import datetime
 from models import Movie, Theater, Show, Booking, Review, Database
 
@@ -96,7 +96,7 @@ class AdminController:
         else:
             flash('Error adding movie', 'error')
         
-        return redirect(url_for('admin_movies'))
+        return redirect('/admin/movies')
     
     @staticmethod
     def add_theater():
@@ -108,7 +108,7 @@ class AdminController:
         else:
             flash('Error adding theater', 'error')
         
-        return redirect(url_for('admin_theaters'))
+        return redirect('/admin/theaters')
     
     @staticmethod
     def add_show():
@@ -120,7 +120,7 @@ class AdminController:
         else:
             flash('Error adding show', 'error')
         
-        return redirect(url_for('admin_shows'))
+        return redirect('/admin/shows')
 
 class DatabaseController:
     @staticmethod
