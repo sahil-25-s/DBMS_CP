@@ -15,6 +15,10 @@ def index():
 def movie_details(movie_id):
     return MovieController.details(movie_id)
 
+@main_bp.route('/movies')
+def movies():
+    return MovieController.index()
+
 @main_bp.route('/book_seats/<int:show_id>')
 def book_seats(show_id):
     return BookingController.book_seats(show_id)
@@ -38,23 +42,23 @@ def add_review():
 
 # Admin routes
 @admin_bp.route('/')
-def dashboard():
+def admin_dashboard():
     return AdminController.dashboard()
 
 @admin_bp.route('/movies')
-def movies():
+def admin_movies():
     return AdminController.movies()
 
 @admin_bp.route('/theaters')
-def theaters():
+def admin_theaters():
     return AdminController.theaters()
 
 @admin_bp.route('/shows')
-def shows():
+def admin_shows():
     return AdminController.shows()
 
 @admin_bp.route('/bookings')
-def bookings():
+def admin_bookings():
     return AdminController.bookings()
 
 @admin_bp.route('/add_movie', methods=['POST'])
