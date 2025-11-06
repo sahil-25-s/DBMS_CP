@@ -15,10 +15,6 @@ def index():
 def movie_details(movie_id):
     return MovieController.details(movie_id)
 
-@main_bp.route('/movies')
-def movies():
-    return MovieController.index()
-
 @main_bp.route('/book_seats/<int:show_id>')
 def book_seats(show_id):
     return BookingController.book_seats(show_id)
@@ -34,6 +30,10 @@ def payment_success():
 @main_bp.route('/payment_instructions')
 def payment_instructions():
     return BookingController.payment_instructions()
+
+@main_bp.route('/movies')
+def movies():
+    return MovieController.index()
 
 @main_bp.route('/init-db')
 def init_db():
