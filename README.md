@@ -1,4 +1,4 @@
-# MovieHub - Online Movie Booking System
+# MovieNight - Online Movie Booking System
 
 A production-ready web application for online movie ticket booking built with Flask and MySQL.
 
