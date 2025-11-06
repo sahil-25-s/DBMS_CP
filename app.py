@@ -1,12 +1,14 @@
 from flask import Flask
 import os
+from dotenv import load_dotenv
 from models import Database
 from controllers import MovieController, BookingController, ReviewController, AdminController, DatabaseController
+
+load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
 
-# Main routes
 @app.route('/')
 def index():
     return MovieController.index()

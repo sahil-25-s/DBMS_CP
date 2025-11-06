@@ -133,6 +133,7 @@ class Movie:
     def create(data):
         connection = Database.get_connection()
         if not connection:
+            print("Database connection failed")
             return False
         
         cursor = connection.cursor()
@@ -146,7 +147,11 @@ class Movie:
             ))
             connection.commit()
             return True
-        except mysql.connector.Error:
+        except mysql.connector.Error as e:
+            print(f"Database error in Movie.create: {e}")
+            return False
+        except Exception as e:
+            print(f"Unexpected error in Movie.create: {e}")
             return False
         finally:
             cursor.close()

@@ -27,6 +27,14 @@ def book_seats(show_id):
 def booking_success(booking_id):
     return BookingController.booking_success(booking_id)
 
+@main_bp.route('/payment_success')
+def payment_success():
+    return BookingController.payment_success()
+
+@main_bp.route('/payment_instructions')
+def payment_instructions():
+    return BookingController.payment_instructions()
+
 @main_bp.route('/init-db')
 def init_db():
     return DatabaseController.init_db()

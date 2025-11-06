@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Instructions{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="payment-instructions animate-fade-in-up">
+        <div class="instruction-header">
+            <h1>💳 Complete Your Payment</h1>
+            <p>Follow these steps to complete your movie ticket booking</p>
+        </div>
+        
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Make Payment</h3>
+                    <p>You will be redirected to our secure Razorpay payment page</p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Complete Transaction</h3>
+                    <p>Enter your payment details and complete the transaction</p>
+                </div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Return to MovieHub</h3>
+                    <p>After payment, click the button below to complete your booking</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="payment-actions">
+            <div class="payment-link">
+                <h3>💳 Make Payment</h3>
+                <p>Click below to open the secure payment page</p>
+                <a href="https://pages.razorpay.com/pl_RcV0Vj23ltee6t/view" target="_blank" class="btn btn-primary btn-large">
+                    Pay Now 💳
+                </a>
+            </div>
+            
+            <div class="return-section">
+                <h3>✅ Payment Completed?</h3>
+                <p>After completing payment, click below to finalize your booking</p>
+                <a href="/payment_success" class="btn btn-success btn-large">
+                    Complete My Booking 🎬
+                </a>
+            </div>
+        </div>
+        
+        <div class="help-section">
+            <h4>Need Help?</h4>
+            <p>If you're facing any issues with payment or booking, please contact our support team.</p>
+        </div>
+    </div>
+</div>
+
+<style>
+.payment-instructions {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+    padding: 4rem;
+    margin: 4rem auto;
+    max-width: 800px;
+    color: white;
+}
+
+.instruction-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.instruction-header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.instruction-header p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.steps {
+    margin-bottom: 4rem;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.step-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary);
+}
+
+.step-content p {
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.payment-actions {
+    display: grid;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.payment-link {
+    text-align: center;
+    padding: 3rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+}
+
+.payment-link h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+.payment-link p {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.return-section {
+    text-align: center;
+    padding: 3rem;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: 12px;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 14px 0 rgba(16, 185, 129, 0.39);
+}
+
+.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px 0 rgba(16, 185, 129, 0.5);
+    color: white;
+}
+
+.return-section h3 {
+    color: var(--success);
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+}
+
+.return-section p {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.help-section {
+    text-align: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.help-section h4 {
+    color: var(--accent);
+    margin-bottom: 1rem;
+}
+
+.help-section p {
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .step {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+    }
+    
+    .instruction-header h1 {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}

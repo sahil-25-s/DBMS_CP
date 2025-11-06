@@ -107,7 +107,7 @@
                     ← Back to Seats
                 </button>
                 <button type="submit" class="btn btn-primary hover-glow">
-                    Confirm Booking 🎉
+                    Proceed to Payment 💳
                 </button>
             </div>
         </form>
@@ -480,22 +480,12 @@ document.getElementById('bookingForm').addEventListener('submit', async function
         total_amount: selectedSeats.length * seatPrice
     };
     
-    try {
-        const response = await fetch('/api/book_tickets', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bookingData)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            window.location.href = `/booking_success/${result.booking_id}`;
-        } else {
-            alert('Booking failed: ' + result.message);
-        }
-    } catch (error) {
-        alert('Error processing booking');
+    // Store booking data in sessionStorage for after payment
+    sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
+    
+    // Show confirmation and redirect to payment instructions
+    if (confirm(`Proceed to payment for ${selectedSeats.length} seats (₹${selectedSeats.length * seatPrice})?`)) {
+        window.location.href = '/payment_instructions';
     }
 });
 </script>

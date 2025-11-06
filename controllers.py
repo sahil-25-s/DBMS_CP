@@ -46,6 +46,14 @@ class BookingController:
             return render_template('error.html', message="Booking not found")
         
         return render_template('booking_success.html', booking=booking)
+    
+    @staticmethod
+    def payment_success():
+        return render_template('payment_success.html')
+    
+    @staticmethod
+    def payment_instructions():
+        return render_template('payment_instructions.html')
 
 class ReviewController:
     @staticmethod
