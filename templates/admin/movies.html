@@ -2,6 +2,10 @@
 
 {% block title %}Manage Movies - Admin{% endblock %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="admin-container">
@@ -15,7 +19,7 @@
                     <i class="fas fa-plus"></i>
                     Add New Movie
                 </button>
-                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">
+                <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-outline">
                     <i class="fas fa-arrow-left"></i>
                     Back to Dashboard
                 </a>
@@ -52,7 +56,7 @@
                             <th>Duration</th>
                             <th>Language</th>
                             <th>Release Date</th>
-                            <th>Rating</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -82,18 +86,7 @@
                             <td>{{ movie.language }}</td>
                             <td>{{ movie.release_date.strftime('%Y-%m-%d') if movie.release_date else 'TBA' }}</td>
                             <td>
-                                <div class="rating-cell">
-                                    <span class="rating-value">{{ "%.1f"|format(movie.rating) }}</span>
-                                    <div class="rating-stars">
-                                        {% for i in range(1, 6) %}
-                                            {% if i <= movie.rating %}
-                                                <i class="fas fa-star"></i>
-                                            {% else %}
-                                                <i class="far fa-star"></i>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                </div>
+                                <span class="status-badge status-active">Active</span>
                             </td>
                             <td>
                                 <div class="action-buttons">
@@ -136,7 +129,7 @@
             <span class="close" onclick="closeModal('addMovieModal')">&times;</span>
         </div>
         
-        <form action="{{ url_for('add_movie') }}" method="POST" class="modal-form">
+        <form action="{{ url_for('admin.add_movie') }}" method="POST" class="modal-form">
             <div class="form-row">
                 <div class="form-group">
                     <label for="title">

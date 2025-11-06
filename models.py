@@ -133,7 +133,6 @@ class Movie:
     def create(data):
         connection = Database.get_connection()
         if not connection:
-            print("Database connection failed")
             return False
         
         cursor = connection.cursor()
@@ -142,16 +141,17 @@ class Movie:
                 INSERT INTO movies (title, description, duration, genre, language, release_date, image_url)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
             """, (
-                data['title'], data['description'], int(data['duration']),
-                data['genre'], data['language'], data['release_date'], data['image_url']
+                data.get('title', ''),
+                data.get('description', ''),
+                int(data.get('duration', 0)) if data.get('duration') else 0,
+                data.get('genre', ''),
+                data.get('language', ''),
+                data.get('release_date') if data.get('release_date') else None,
+                data.get('image_url', '')
             ))
             connection.commit()
             return True
-        except mysql.connector.Error as e:
-            print(f"Database error in Movie.create: {e}")
-            return False
-        except Exception as e:
-            print(f"Unexpected error in Movie.create: {e}")
+        except Exception:
             return False
         finally:
             cursor.close()
