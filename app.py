@@ -13,9 +13,9 @@ app.register_blueprint(main_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(api_bp)
 
-# Initialize simple database on startup
-from simple_db import Database
-Database.init_database()
+# Initialize PostgreSQL database
+import postgres_db as db
+db.init_database()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
