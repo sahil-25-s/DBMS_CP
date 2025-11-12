@@ -18,4 +18,11 @@ import simple_sqlite as db
 db.init_database()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    print("\n" + "="*50)
+    print("🎬 MovieNight - Movie Booking System")
+    print("="*50)
+    print("🌐 Server running at: http://localhost:5000")
+    print("⚙️  Admin Panel: http://localhost:5000/admin")
+    print("🗄️  Database: SQLite (movienight.db)")
+    print("="*50 + "\n")
+    app.run(debug=True, port=5000, host='0.0.0.0')
