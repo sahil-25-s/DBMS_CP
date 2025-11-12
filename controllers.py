@@ -8,6 +8,11 @@ except:
 class MovieController:
     @staticmethod
     def index():
+        try:
+            from models import Movie
+        except:
+            from sqlite_models import Movie
+            
         movies = Movie.get_all()
         return render_template('home.html', movies=movies)
     
@@ -76,16 +81,31 @@ class AdminController:
     
     @staticmethod
     def movies():
+        try:
+            from models import Movie
+        except:
+            from sqlite_models import Movie
+            
         movies = Movie.get_all()
         return render_template('admin/movies.html', movies=movies)
     
     @staticmethod
     def theaters():
+        try:
+            from models import Theater
+        except:
+            from sqlite_models import Theater
+            
         theaters = Theater.get_all()
         return render_template('admin/theaters.html', theaters=theaters)
     
     @staticmethod
     def shows():
+        try:
+            from models import Show, Movie, Theater
+        except:
+            from sqlite_models import Show, Movie, Theater
+            
         shows = Show.get_all()
         movies = Movie.get_all()
         theaters = Theater.get_all()
@@ -100,17 +120,20 @@ class AdminController:
     @staticmethod
     def add_movie():
         try:
+            from models import Movie
+        except:
+            from sqlite_models import Movie
+            
+        try:
             data = request.form
-            print(f"Form data: {dict(data)}")
             success = Movie.create(data)
             
             if success:
                 flash('Movie added successfully!', 'success')
             else:
-                flash('Error adding movie - database operation failed', 'error')
+                flash('Database connection failed', 'error')
         except Exception as e:
-            print(f"Error in add_movie: {e}")
-            flash(f'Error adding movie: {str(e)}', 'error')
+            flash(f'Error: {str(e)}', 'error')
         
         return redirect('/admin/movies')
     
