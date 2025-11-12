@@ -8,8 +8,33 @@ except:
 class MovieController:
     @staticmethod
     def index():
-        from simple_db import Movie
-        movies = Movie.get_all()
+        import sqlite3
+        import tempfile
+        
+        try:
+            db_path = os.path.join(tempfile.gettempdir(), 'movienight.db')
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            cursor.execute('SELECT * FROM movies')
+            rows = cursor.fetchall()
+            
+            movies = []
+            for row in rows:
+                movies.append({
+                    'id': row[0],
+                    'title': row[1],
+                    'description': row[2],
+                    'duration': row[3],
+                    'genre': row[4],
+                    'language': row[5],
+                    'release_date': row[6],
+                    'image_url': row[7]
+                })
+            
+            conn.close()
+        except:
+            movies = []
+            
         return render_template('home.html', movies=movies)
     
     @staticmethod
@@ -77,8 +102,35 @@ class AdminController:
     
     @staticmethod
     def movies():
-        from simple_db import Movie
-        movies = Movie.get_all()
+        import sqlite3
+        import tempfile
+        
+        try:
+            db_path = os.path.join(tempfile.gettempdir(), 'movienight.db')
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            
+            cursor.execute('SELECT * FROM movies ORDER BY id DESC')
+            rows = cursor.fetchall()
+            
+            movies = []
+            for row in rows:
+                movies.append({
+                    'id': row[0],
+                    'title': row[1],
+                    'description': row[2],
+                    'duration': row[3],
+                    'genre': row[4],
+                    'language': row[5],
+                    'release_date': row[6],
+                    'image_url': row[7]
+                })
+            
+            conn.close()
+            
+        except:
+            movies = []
+            
         return render_template('admin/movies.html', movies=movies)
     
     @staticmethod
@@ -103,15 +155,53 @@ class AdminController:
     
     @staticmethod
     def add_movie():
-        from simple_db import Movie
+        import sqlite3
         
         data = request.form
-        success = Movie.create(data)
         
-        if success:
+        try:
+            # Create database in temp directory
+            import tempfile
+            db_path = os.path.join(tempfile.gettempdir(), 'movienight.db')
+            
+            conn = sqlite3.connect(db_path)
+            cursor = conn.cursor()
+            
+            # Create table if not exists
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS movies (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT,
+                    description TEXT,
+                    duration INTEGER,
+                    genre TEXT,
+                    language TEXT,
+                    release_date TEXT,
+                    image_url TEXT
+                )
+            ''')
+            
+            # Insert movie
+            cursor.execute('''
+                INSERT INTO movies (title, description, duration, genre, language, release_date, image_url)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (
+                data.get('title'),
+                data.get('description'),
+                int(data.get('duration', 0)),
+                data.get('genre'),
+                data.get('language'),
+                data.get('release_date'),
+                data.get('image_url', '')
+            ))
+            
+            conn.commit()
+            conn.close()
+            
             flash('Movie added successfully!', 'success')
-        else:
-            flash('Failed to add movie', 'error')
+            
+        except Exception as e:
+            flash(f'Error: {str(e)}', 'error')
         
         return redirect('/admin/movies')
     
