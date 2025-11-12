@@ -13,8 +13,8 @@ app.register_blueprint(main_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(api_bp)
 
-# Initialize SQLite database on startup
-from sqlite_models import Database
+# Initialize simple database on startup
+from simple_db import Database
 Database.init_database()
 
 if __name__ == '__main__':

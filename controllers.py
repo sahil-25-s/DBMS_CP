@@ -8,7 +8,7 @@ except:
 class MovieController:
     @staticmethod
     def index():
-        from sqlite_models import Movie
+        from simple_db import Movie
         movies = Movie.get_all()
         return render_template('home.html', movies=movies)
     
@@ -77,19 +77,19 @@ class AdminController:
     
     @staticmethod
     def movies():
-        from sqlite_models import Movie
+        from simple_db import Movie
         movies = Movie.get_all()
         return render_template('admin/movies.html', movies=movies)
     
     @staticmethod
     def theaters():
-        from sqlite_models import Theater
+        from simple_db import Theater
         theaters = Theater.get_all()
         return render_template('admin/theaters.html', theaters=theaters)
     
     @staticmethod
     def shows():
-        from sqlite_models import Show, Movie, Theater
+        from simple_db import Show, Movie, Theater
         shows = Show.get_all()
         movies = Movie.get_all()
         theaters = Theater.get_all()
@@ -103,73 +103,43 @@ class AdminController:
     
     @staticmethod
     def add_movie():
-        from sqlite_models import Movie, Database
-        
-        # Ensure database exists
-        Database.init_database()
+        from simple_db import Movie
         
         data = request.form
-        print(f"Form data received: {dict(data)}")
+        success = Movie.create(data)
         
-        # Create movie directly
-        import sqlite3
-        import os
-        try:
-            db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'movienight.db')
-            conn = sqlite3.connect(db_path)
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO movies (title, description, duration, genre, language, release_date, image_url)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (
-                data.get('title', ''),
-                data.get('description', ''),
-                int(data.get('duration', 0)) if data.get('duration') else 0,
-                data.get('genre', ''),
-                data.get('language', ''),
-                data.get('release_date') if data.get('release_date') else None,
-                data.get('image_url', '')
-            ))
-            conn.commit()
-            conn.close()
+        if success:
             flash('Movie added successfully!', 'success')
-        except Exception as e:
-            print(f"Error adding movie: {e}")
-            flash(f'Error: {str(e)}', 'error')
+        else:
+            flash('Failed to add movie', 'error')
         
         return redirect('/admin/movies')
     
     @staticmethod
     def add_theater():
-        from sqlite_models import Theater
+        from simple_db import Theater
         
-        try:
-            data = request.form
-            success = Theater.create(data)
-            
-            if success:
-                flash('Theater added successfully!', 'success')
-            else:
-                flash('Failed to add theater', 'error')
-        except Exception as e:
-            flash(f'Error: {str(e)}', 'error')
+        data = request.form
+        success = Theater.create(data)
+        
+        if success:
+            flash('Theater added successfully!', 'success')
+        else:
+            flash('Failed to add theater', 'error')
         
         return redirect('/admin/theaters')
     
     @staticmethod
     def add_show():
-        from sqlite_models import Show
+        from simple_db import Show
         
-        try:
-            data = request.form
-            success = Show.create(data)
-            
-            if success:
-                flash('Show added successfully!', 'success')
-            else:
-                flash('Failed to add show', 'error')
-        except Exception as e:
-            flash(f'Error: {str(e)}', 'error')
+        data = request.form
+        success = Show.create(data)
+        
+        if success:
+            flash('Show added successfully!', 'success')
+        else:
+            flash('Failed to add show', 'error')
         
         return redirect('/admin/shows')
 
