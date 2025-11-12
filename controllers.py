@@ -113,6 +113,7 @@ class AdminController:
         
         # Create movie directly
         import sqlite3
+        import os
         try:
             db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'movienight.db')
             conn = sqlite3.connect(db_path)
