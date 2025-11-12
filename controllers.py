@@ -1,6 +1,6 @@
 from flask import render_template, request, jsonify, flash, redirect
 from datetime import datetime
-import postgres_db as db
+import simple_sqlite as db
 
 class MovieController:
     @staticmethod

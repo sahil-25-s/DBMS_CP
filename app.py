@@ -13,8 +13,8 @@ app.register_blueprint(main_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(api_bp)
 
-# Initialize PostgreSQL database
-import postgres_db as db
+# Initialize SQLite database
+import simple_sqlite as db
 db.init_database()
 
 if __name__ == '__main__':
