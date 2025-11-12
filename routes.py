@@ -1,8 +1,4 @@
 from flask import Blueprint
-try:
-    from models import Movie, Theater, Show, Booking, Review, Database
-except:
-    from sqlite_models import Movie, Theater, Show, Booking, Review, Database
 from controllers import MovieController, BookingController, ReviewController, AdminController, DatabaseController
 
 # Create blueprints
@@ -35,11 +31,7 @@ def payment_success():
 def payment_instructions():
     return BookingController.payment_instructions()
 
-@main_bp.route('/set_language/<language>')
-def set_language(language):
-    from flask import session, redirect, request
-    session['language'] = language
-    return redirect(request.referrer or '/')
+
 
 @main_bp.route('/movies')
 def movies():
