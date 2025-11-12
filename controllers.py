@@ -103,17 +103,36 @@ class AdminController:
     
     @staticmethod
     def add_movie():
-        from sqlite_models import Movie
+        from sqlite_models import Movie, Database
         
+        # Ensure database exists
+        Database.init_database()
+        
+        data = request.form
+        print(f"Form data received: {dict(data)}")
+        
+        # Create movie directly
+        import sqlite3
         try:
-            data = request.form
-            success = Movie.create(data)
-            
-            if success:
-                flash('Movie added successfully!', 'success')
-            else:
-                flash('Failed to add movie', 'error')
+            conn = sqlite3.connect('movienight.db')
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO movies (title, description, duration, genre, language, release_date, image_url)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            """, (
+                data.get('title', ''),
+                data.get('description', ''),
+                int(data.get('duration', 0)) if data.get('duration') else 0,
+                data.get('genre', ''),
+                data.get('language', ''),
+                data.get('release_date') if data.get('release_date') else None,
+                data.get('image_url', '')
+            ))
+            conn.commit()
+            conn.close()
+            flash('Movie added successfully!', 'success')
         except Exception as e:
+            print(f"Error adding movie: {e}")
             flash(f'Error: {str(e)}', 'error')
         
         return redirect('/admin/movies')
