@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}MovieHub - Latest Movies{% endblock %}
+{% block title %}MovieNight - Latest Movies{% endblock %}
 
 {% block content %}
 <div class="hero-section">
     <div class="hero-content">
-        <h1 class="animate-fade-in-up">🎬 MovieHub</h1>
-        <p class="animate-fade-in-up stagger-2">Experience cinema like never before</p>
+        <h1 class="animate-fade-in-up">🎬 MovieNight</h1>
+        <p class="animate-fade-in-up stagger-2">{{ _('Experience cinema like never before') }}</p>
         <div class="animate-fade-in-up stagger-3">
-            <a href="#movies" class="btn btn-primary hover-glow">Explore Movies</a>
+            <a href="#movies" class="btn btn-primary hover-glow">{{ _('Explore Movies') }}</a>
         </div>
     </div>
 </div>
@@ -16,8 +16,8 @@
 <div class="container">
     <section class="movies-section" id="movies">
         <div class="section-header">
-            <h2 class="animate-fade-in-up">✨ Now Showing</h2>
-            <p class="animate-fade-in-up stagger-1">Discover the latest movies and book your tickets instantly</p>
+            <h2 class="animate-fade-in-up">✨ {{ _('Now Showing') }}</h2>
+            <p class="animate-fade-in-up stagger-1">{{ _('Discover the latest movies and book your tickets instantly') }}</p>
         </div>
 
         <div class="movies-grid">
@@ -97,7 +97,7 @@
     <!-- Featured Section -->
     <section class="featured-section">
         <div class="section-header">
-            <h2 class="animate-fade-in-up">🔥 Why Choose MovieHub?</h2>
+            <h2 class="animate-fade-in-up">🔥 Why Choose MovieNight?</h2>
         </div>
         
         <div class="features-grid">
@@ -130,7 +130,7 @@
                     📱
                 </div>
                 <h3>Mobile Friendly</h3>
-                <p>Access MovieHub on any device, anywhere, anytime</p>
+                <p>Access MovieNight on any device, anywhere, anytime</p>
             </div>
         </div>
     </section>

@@ -2,6 +2,10 @@
 
 {% block title %}Manage Shows - Admin{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
 {% block content %}
 <div class="container">
     <div class="admin-container">
@@ -15,7 +19,7 @@
                     <i class="fas fa-plus"></i>
                     Add New Show
                 </button>
-                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">
+                <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-outline">
                     <i class="fas fa-arrow-left"></i>
                     Back to Dashboard
                 </a>
@@ -105,7 +109,7 @@
             <span class="close" onclick="closeModal('addShowModal')">&times;</span>
         </div>
         
-        <form action="{{ url_for('add_show') }}" method="POST" class="modal-form">
+        <form action="{{ url_for('admin.add_show') }}" method="POST" class="modal-form">
             <div class="form-row">
                 <div class="form-group">
                     <label for="movie_id">

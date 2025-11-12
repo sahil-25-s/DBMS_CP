@@ -1,6 +1,9 @@
 from flask import render_template, request, jsonify, flash, redirect
 from datetime import datetime
-from models import Movie, Theater, Show, Booking, Review, Database
+try:
+    from models import Movie, Theater, Show, Booking, Review, Database
+except:
+    from sqlite_models import Movie, Theater, Show, Booking, Review, Database
 
 class MovieController:
     @staticmethod
@@ -96,13 +99,18 @@ class AdminController:
     
     @staticmethod
     def add_movie():
-        data = request.form
-        success = Movie.create(data)
-        
-        if success:
-            flash('Movie added successfully!', 'success')
-        else:
-            flash('Error adding movie', 'error')
+        try:
+            data = request.form
+            print(f"Form data: {dict(data)}")
+            success = Movie.create(data)
+            
+            if success:
+                flash('Movie added successfully!', 'success')
+            else:
+                flash('Error adding movie - database operation failed', 'error')
+        except Exception as e:
+            print(f"Error in add_movie: {e}")
+            flash(f'Error adding movie: {str(e)}', 'error')
         
         return redirect('/admin/movies')
     

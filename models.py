@@ -11,10 +11,11 @@ class Database:
                 host=os.environ.get('DB_HOST', 'localhost'),
                 user=os.environ.get('DB_USER', 'root'),
                 password=os.environ.get('DB_PASSWORD', ''),
-                database=os.environ.get('DB_NAME', 'moviehub'),
+                database=os.environ.get('DB_NAME', 'movienight'),
                 port=int(os.environ.get('DB_PORT', 3306))
             )
-        except mysql.connector.Error:
+        except mysql.connector.Error as e:
+            print(f"Database connection error: {e}")
             return None
 
     @staticmethod
@@ -96,7 +97,8 @@ class Database:
             connection.commit()
             return True
             
-        except mysql.connector.Error:
+        except mysql.connector.Error as e:
+            print(f"Database initialization error: {e}")
             return False
         finally:
             cursor.close()
@@ -133,10 +135,12 @@ class Movie:
     def create(data):
         connection = Database.get_connection()
         if not connection:
+            print("Database connection failed")
             return False
         
         cursor = connection.cursor()
         try:
+            print(f"Inserting movie data: {dict(data)}")
             cursor.execute("""
                 INSERT INTO movies (title, description, duration, genre, language, release_date, image_url)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -150,8 +154,10 @@ class Movie:
                 data.get('image_url', '')
             ))
             connection.commit()
+            print("Movie inserted successfully")
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Database error: {e}")
             return False
         finally:
             cursor.close()

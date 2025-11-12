@@ -23,11 +23,21 @@
             
             <div class="nav-menu">
                 <a href="/" class="nav-link">
-                    🏠 Home
+                    🏠 {{ _('Home') }}
                 </a>
                 <a href="/admin/" class="nav-link">
-                    ⚙️ Admin
+                    ⚙️ {{ _('Admin') }}
                 </a>
+                <div class="language-selector">
+                    <select onchange="changeLanguage(this.value)" class="language-select">
+                        <option value="en" {% if get_locale() == 'en' %}selected{% endif %}>🇺🇸 English</option>
+                        <option value="es" {% if get_locale() == 'es' %}selected{% endif %}>🇪🇸 Español</option>
+                        <option value="fr" {% if get_locale() == 'fr' %}selected{% endif %}>🇫🇷 Français</option>
+                        <option value="de" {% if get_locale() == 'de' %}selected{% endif %}>🇩🇪 Deutsch</option>
+                        <option value="hi" {% if get_locale() == 'hi' %}selected{% endif %}>🇮🇳 हिन्दी</option>
+                        <option value="ja" {% if get_locale() == 'ja' %}selected{% endif %}>🇯🇵 日本語</option>
+                    </select>
+                </div>
             </div>
         </div>
     </nav>
@@ -83,6 +93,11 @@
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script src="{{ url_for('static', filename='js/ui-enhancements.js') }}"></script>
+    <script>
+    function changeLanguage(lang) {
+        window.location.href = '/set_language/' + lang;
+    }
+    </script>
     {% block scripts %}{% endblock %}
 </body>
 </html>
