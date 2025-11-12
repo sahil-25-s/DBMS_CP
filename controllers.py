@@ -10,6 +10,7 @@ class MovieController:
     def index():
         import sqlite3
         import tempfile
+        import os
         
         try:
             db_path = os.path.join(tempfile.gettempdir(), 'movienight.db')
@@ -104,6 +105,7 @@ class AdminController:
     def movies():
         import sqlite3
         import tempfile
+        import os
         
         try:
             db_path = os.path.join(tempfile.gettempdir(), 'movienight.db')
@@ -156,12 +158,13 @@ class AdminController:
     @staticmethod
     def add_movie():
         import sqlite3
+        import tempfile
+        import os
         
         data = request.form
         
         try:
             # Create database in temp directory
-            import tempfile
             db_path = os.path.join(tempfile.gettempdir(), 'movienight.db')
             
             conn = sqlite3.connect(db_path)
