@@ -8,11 +8,7 @@ except:
 class MovieController:
     @staticmethod
     def index():
-        try:
-            from models import Movie
-        except:
-            from sqlite_models import Movie
-            
+        from sqlite_models import Movie
         movies = Movie.get_all()
         return render_template('home.html', movies=movies)
     
@@ -81,31 +77,19 @@ class AdminController:
     
     @staticmethod
     def movies():
-        try:
-            from models import Movie
-        except:
-            from sqlite_models import Movie
-            
+        from sqlite_models import Movie
         movies = Movie.get_all()
         return render_template('admin/movies.html', movies=movies)
     
     @staticmethod
     def theaters():
-        try:
-            from models import Theater
-        except:
-            from sqlite_models import Theater
-            
+        from sqlite_models import Theater
         theaters = Theater.get_all()
         return render_template('admin/theaters.html', theaters=theaters)
     
     @staticmethod
     def shows():
-        try:
-            from models import Show, Movie, Theater
-        except:
-            from sqlite_models import Show, Movie, Theater
-            
+        from sqlite_models import Show, Movie, Theater
         shows = Show.get_all()
         movies = Movie.get_all()
         theaters = Theater.get_all()
@@ -119,11 +103,8 @@ class AdminController:
     
     @staticmethod
     def add_movie():
-        try:
-            from models import Movie
-        except:
-            from sqlite_models import Movie
-            
+        from sqlite_models import Movie
+        
         try:
             data = request.form
             success = Movie.create(data)
@@ -131,7 +112,7 @@ class AdminController:
             if success:
                 flash('Movie added successfully!', 'success')
             else:
-                flash('Database connection failed', 'error')
+                flash('Failed to add movie', 'error')
         except Exception as e:
             flash(f'Error: {str(e)}', 'error')
         
@@ -139,31 +120,42 @@ class AdminController:
     
     @staticmethod
     def add_theater():
-        data = request.form
-        success = Theater.create(data)
+        from sqlite_models import Theater
         
-        if success:
-            flash('Theater added successfully!', 'success')
-        else:
-            flash('Error adding theater', 'error')
+        try:
+            data = request.form
+            success = Theater.create(data)
+            
+            if success:
+                flash('Theater added successfully!', 'success')
+            else:
+                flash('Failed to add theater', 'error')
+        except Exception as e:
+            flash(f'Error: {str(e)}', 'error')
         
         return redirect('/admin/theaters')
     
     @staticmethod
     def add_show():
-        data = request.form
-        success = Show.create(data)
+        from sqlite_models import Show
         
-        if success:
-            flash('Show added successfully!', 'success')
-        else:
-            flash('Error adding show', 'error')
+        try:
+            data = request.form
+            success = Show.create(data)
+            
+            if success:
+                flash('Show added successfully!', 'success')
+            else:
+                flash('Failed to add show', 'error')
+        except Exception as e:
+            flash(f'Error: {str(e)}', 'error')
         
         return redirect('/admin/shows')
 
 class DatabaseController:
     @staticmethod
     def init_db():
+        from sqlite_models import Database
         success = Database.init_database()
         if success:
             return jsonify({'success': True, 'message': 'Database initialized successfully'})

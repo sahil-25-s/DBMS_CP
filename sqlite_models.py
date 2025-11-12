@@ -234,6 +234,35 @@ class Show:
         cursor.close()
         connection.close()
         return shows
+    
+    @staticmethod
+    def create(data):
+        connection = Database.get_connection()
+        if not connection:
+            return False
+        
+        cursor = connection.cursor()
+        try:
+            # Get theater total seats
+            cursor.execute("SELECT total_seats FROM theaters WHERE id = ?", (data.get('theater_id'),))
+            theater = cursor.fetchone()
+            available_seats = theater[0] if theater else 100
+            
+            cursor.execute("""
+                INSERT INTO shows (movie_id, theater_id, show_date, show_time, price, available_seats)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (
+                data.get('movie_id'), data.get('theater_id'), data.get('show_date'),
+                data.get('show_time'), float(data.get('price', 0)), available_seats
+            ))
+            connection.commit()
+            return True
+        except Exception as e:
+            print(f"Show creation error: {e}")
+            return False
+        finally:
+            cursor.close()
+            connection.close()
 
 class Booking:
     @staticmethod

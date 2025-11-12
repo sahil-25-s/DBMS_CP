@@ -13,13 +13,9 @@ app.register_blueprint(main_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(api_bp)
 
-# Initialize database on startup
-try:
-    from models import Database
-    Database.init_database()
-except:
-    from sqlite_models import Database
-    Database.init_database()
+# Initialize SQLite database on startup
+from sqlite_models import Database
+Database.init_database()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
