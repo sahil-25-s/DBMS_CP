@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 class Database:
-    DB_PATH = 'movienight.db'
+    DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'movienight.db')
     
     @staticmethod
     def get_connection():

@@ -114,7 +114,8 @@ class AdminController:
         # Create movie directly
         import sqlite3
         try:
-            conn = sqlite3.connect('movienight.db')
+            db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'movienight.db')
+            conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
             cursor.execute("""
                 INSERT INTO movies (title, description, duration, genre, language, release_date, image_url)
