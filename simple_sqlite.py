@@ -249,26 +249,13 @@ def add_booking(show_id, customer_name, customer_email, customer_phone, selected
     conn = get_connection()
     cursor = conn.cursor()
     
-    # Create bookings table if it doesn't exist
-    cursor.execute('''CREATE TABLE IF NOT EXISTS bookings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        show_id INTEGER,
-        customer_name TEXT,
-        customer_email TEXT,
-        customer_phone TEXT,
-        seat_numbers TEXT,
-        total_amount REAL,
-        booking_date TEXT
-    )''')
-    
     import json
-    from datetime import datetime
     
-    sql_query = '''INSERT INTO bookings (show_id, customer_name, customer_email, customer_phone, seat_numbers, total_amount, booking_date)
-                   VALUES (?, ?, ?, ?, ?, ?, ?)'''
+    sql_query = '''INSERT INTO bookings (show_id, customer_name, customer_email, customer_phone, seat_numbers, total_amount)
+                   VALUES (?, ?, ?, ?, ?, ?)'''
     
     cursor.execute(sql_query, (show_id, customer_name, customer_email, customer_phone, 
-                              json.dumps(selected_seats), total_amount, datetime.now().isoformat()))
+                              json.dumps(selected_seats), total_amount))
     
     booking_id = cursor.lastrowid
     
@@ -302,7 +289,7 @@ def get_booking_by_id(booking_id):
     conn = get_connection()
     cursor = conn.cursor()
     
-    sql_query = '''SELECT b.id, b.show_id, b.customer_name, b.customer_email, b.customer_phone, b.seat_numbers, b.total_amount, b.booking_date, s.show_date, s.show_time, m.title, t.name as theater_name
+    sql_query = '''SELECT b.id, b.show_id, b.customer_name, b.customer_email, b.customer_phone, b.seat_numbers, b.total_amount, s.show_date, s.show_time, m.title, t.name as theater_name
                    FROM bookings b
                    LEFT JOIN shows s ON b.show_id = s.id
                    LEFT JOIN movies m ON s.movie_id = m.id

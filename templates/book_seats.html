@@ -9,8 +9,8 @@
             <h1>🎬 {{ show.title }}</h1>
             <div class="show-info">
                 <span class="theater">🏢 {{ show.theater_name }}</span>
-                <span class="date">📅 {{ show.show_date.strftime('%b %d, %Y') if show.show_date else show.show_date }}</span>
-                <span class="time">🕐 {{ show.show_time.strftime('%I:%M %p') if show.show_time else show.show_time }}</span>
+                <span class="date">📅 {{ show.show_date }}</span>
+                <span class="time">🕐 {{ show.show_time }}</span>
                 <span class="price">💰 ₹{{ "%.0f"|format(show.price) }} per seat</span>
             </div>
         </div>

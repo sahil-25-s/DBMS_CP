@@ -70,8 +70,8 @@ class BookingController:
                 'show_time': show_data[4],
                 'price': show_data[5],
                 'available_seats': show_data[6],
-                'title': show_data[8],
-                'theater_name': show_data[9]
+                'title': show_data[7],
+                'theater_name': show_data[8]
             }
             
             booked_seats = db.get_booked_seats(show_id)
@@ -135,11 +135,11 @@ class BookingController:
                 'customer_phone': booking_data[4],
                 'selected_seats': json.loads(booking_data[5]) if booking_data[5] else [],
                 'total_amount': booking_data[6],
-                'booking_date': datetime.fromisoformat(booking_data[7]).strftime('%B %d, %Y at %I:%M %p'),
-                'show_date': booking_data[8],
-                'show_time': booking_data[9],
-                'title': booking_data[10],
-                'theater_name': booking_data[11]
+                'booking_date': 'Just now',
+                'show_date': booking_data[7],
+                'show_time': booking_data[8],
+                'title': booking_data[9],
+                'theater_name': booking_data[10]
             }
             return render_template('booking_success.html', booking=booking)
         except Exception as e:
