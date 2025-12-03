@@ -84,7 +84,7 @@
                             </td>
                             <td>{{ movie.duration }} mins</td>
                             <td>{{ movie.language }}</td>
-                            <td>{{ movie.release_date.strftime('%Y-%m-%d') if movie.release_date else 'TBA' }}</td>
+                            <td>{{ movie.release_date if movie.release_date else 'TBA' }}</td>
                             <td>
                                 <span class="status-badge status-active">Active</span>
                             </td>

@@ -31,6 +31,10 @@ def payment_success():
 def payment_instructions():
     return BookingController.payment_instructions()
 
+@main_bp.route('/razorpay_payment')
+def razorpay_payment():
+    return BookingController.razorpay_payment()
+
 
 
 @main_bp.route('/movies')
@@ -40,6 +44,10 @@ def movies():
 @main_bp.route('/init-db')
 def init_db():
     return DatabaseController.init_db()
+
+@main_bp.route('/update-images')
+def update_images():
+    return DatabaseController.update_images()
 
 # API routes
 @api_bp.route('/book_tickets', methods=['POST'])

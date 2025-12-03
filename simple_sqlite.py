@@ -55,14 +55,48 @@ def init_database():
     if cursor.fetchone()[0] == 0:
         print("🎬 Adding sample movies...")
         sample_movies = [
-            ('Avengers: Endgame', 'Epic superhero finale', 181, 'Action', 'English', '2024-01-15', 'https://via.placeholder.com/300x450'),
-            ('Spider-Man', 'Friendly neighborhood hero', 148, 'Action', 'English', '2024-02-01', 'https://via.placeholder.com/300x450'),
-            ('The Dark Knight', 'Batman vs Joker', 152, 'Action', 'English', '2024-01-20', 'https://via.placeholder.com/300x450')
+            ('Avengers: Endgame', 'Epic superhero finale', 181, 'Action', 'English', '2024-01-15', 'https://upload.wikimedia.org/wikipedia/en/0/0d/Avengers_Endgame_poster.jpg'),
+            ('Spider-Man', 'Friendly neighborhood hero', 148, 'Action', 'English', '2024-02-01', 'https://upload.wikimedia.org/wikipedia/en/2/21/Web_of_Spider-Man_Vol_1_129-1.png'),
+            ('The Dark Knight', 'Batman vs Joker', 152, 'Action', 'English', '2024-01-20', 'https://upload.wikimedia.org/wikipedia/en/1/1c/The_Dark_Knight_%282008_film%29.jpg')
         ]
         
         for movie in sample_movies:
             cursor.execute('INSERT INTO movies (title, description, duration, genre, language, release_date, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)', movie)
         print(f"✅ Added {len(sample_movies)} sample movies")
+    else:
+        # Update existing movies with proper images
+        update_all_movie_images()
+    
+    # Add sample theaters
+    cursor.execute('SELECT COUNT(*) FROM theaters')
+    if cursor.fetchone()[0] == 0:
+        print("🏢 Adding sample theaters...")
+        sample_theaters = [
+            ('PVR Cinemas', 'Mall Road', 96),
+            ('INOX Theater', 'City Center', 120),
+            ('Cineplex', 'Downtown', 80)
+        ]
+        
+        for theater in sample_theaters:
+            cursor.execute('INSERT INTO theaters (name, location, total_seats) VALUES (?, ?, ?)', theater)
+        print(f"✅ Added {len(sample_theaters)} sample theaters")
+    
+    # Add sample shows
+    cursor.execute('SELECT COUNT(*) FROM shows')
+    if cursor.fetchone()[0] == 0:
+        print("🎭 Adding sample shows...")
+        sample_shows = [
+            (1, 1, '2024-12-25', '18:00', 250.0, 96),
+            (1, 2, '2024-12-25', '21:00', 300.0, 120),
+            (2, 1, '2024-12-26', '15:00', 200.0, 96),
+            (2, 3, '2024-12-26', '19:30', 220.0, 80),
+            (3, 2, '2024-12-27', '16:00', 280.0, 120),
+            (3, 3, '2024-12-27', '20:00', 260.0, 80)
+        ]
+        
+        for show in sample_shows:
+            cursor.execute('INSERT INTO shows (movie_id, theater_id, show_date, show_time, price, available_seats) VALUES (?, ?, ?, ?, ?, ?)', show)
+        print(f"✅ Added {len(sample_shows)} sample shows")
     
     conn.commit()
     conn.close()
@@ -123,21 +157,160 @@ def get_all_theaters():
 def add_show(movie_id, theater_id, show_date, show_time, price, available_seats):
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('''INSERT INTO shows (movie_id, theater_id, show_date, show_time, price, available_seats)
-                     VALUES (?, ?, ?, ?, ?, ?)''',
-                   (movie_id, theater_id, show_date, show_time, price, available_seats))
+    
+    sql_query = '''INSERT INTO shows (movie_id, theater_id, show_date, show_time, price, available_seats)
+                   VALUES (?, ?, ?, ?, ?, ?)'''
+    
+    print(f"\n💾 SQL Query: {sql_query}")
+    print(f"📊 Data: {(movie_id, theater_id, show_date, show_time, price, available_seats)}")
+    
+    cursor.execute(sql_query, (movie_id, theater_id, show_date, show_time, price, available_seats))
     show_id = cursor.lastrowid
     conn.commit()
     conn.close()
+    
+    print(f"✅ Show added successfully with ID: {show_id}\n")
     return show_id
 
 def get_all_shows():
     conn = get_connection()
     cursor = conn.cursor()
-    cursor.execute('''SELECT s.*, m.title, t.name as theater_name 
-                     FROM shows s 
-                     LEFT JOIN movies m ON s.movie_id = m.id 
-                     LEFT JOIN theaters t ON s.theater_id = t.id''')
+    
+    sql_query = '''SELECT s.*, m.title, t.name as theater_name 
+                   FROM shows s 
+                   LEFT JOIN movies m ON s.movie_id = m.id 
+                   LEFT JOIN theaters t ON s.theater_id = t.id
+                   ORDER BY s.id DESC'''
+    
+    print(f"💾 SQL Query: {sql_query}")
+    
+    cursor.execute(sql_query)
     shows = cursor.fetchall()
     conn.close()
+    
+    print(f"📈 Retrieved {len(shows)} shows from database")
     return shows
+
+def update_movie_image(movie_id, image_url):
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    sql_query = 'UPDATE movies SET image_url = ? WHERE id = ?'
+    print(f"💾 SQL Query: {sql_query}")
+    print(f"📊 Data: {(image_url, movie_id)}")
+    
+    cursor.execute(sql_query, (image_url, movie_id))
+    conn.commit()
+    conn.close()
+    
+    print(f"✅ Movie {movie_id} image updated successfully\n")
+
+def update_all_movie_images():
+    # High-quality movie poster URLs
+    movie_images = {
+        'Avengers: Endgame': 'https://upload.wikimedia.org/wikipedia/en/0/0d/Avengers_Endgame_poster.jpg',
+        'Spider-Man': 'https://upload.wikimedia.org/wikipedia/en/2/21/Web_of_Spider-Man_Vol_1_129-1.png',
+        'The Dark Knight': 'https://upload.wikimedia.org/wikipedia/en/1/1c/The_Dark_Knight_%282008_film%29.jpg'
+    }
+    
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    print("🎬 Updating movie poster images...")
+    
+    for title, image_url in movie_images.items():
+        cursor.execute('SELECT id FROM movies WHERE title = ?', (title,))
+        result = cursor.fetchone()
+        if result:
+            movie_id = result[0]
+            cursor.execute('UPDATE movies SET image_url = ? WHERE id = ?', (image_url, movie_id))
+            print(f"✅ Updated {title} poster")
+    
+    conn.commit()
+    conn.close()
+    print("🎬 All movie posters updated!\n")
+def get_show_by_id(show_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    sql_query = '''SELECT s.id, s.movie_id, s.theater_id, s.show_date, s.show_time, s.price, s.available_seats, m.title, t.name as theater_name
+                   FROM shows s 
+                   LEFT JOIN movies m ON s.movie_id = m.id 
+                   LEFT JOIN theaters t ON s.theater_id = t.id
+                   WHERE s.id = ?'''
+    
+    cursor.execute(sql_query, (show_id,))
+    show = cursor.fetchone()
+    conn.close()
+    
+    return show
+
+def add_booking(show_id, customer_name, customer_email, customer_phone, selected_seats, total_amount):
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    # Create bookings table if it doesn't exist
+    cursor.execute('''CREATE TABLE IF NOT EXISTS bookings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        show_id INTEGER,
+        customer_name TEXT,
+        customer_email TEXT,
+        customer_phone TEXT,
+        seat_numbers TEXT,
+        total_amount REAL,
+        booking_date TEXT
+    )''')
+    
+    import json
+    from datetime import datetime
+    
+    sql_query = '''INSERT INTO bookings (show_id, customer_name, customer_email, customer_phone, seat_numbers, total_amount, booking_date)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)'''
+    
+    cursor.execute(sql_query, (show_id, customer_name, customer_email, customer_phone, 
+                              json.dumps(selected_seats), total_amount, datetime.now().isoformat()))
+    
+    booking_id = cursor.lastrowid
+    
+    # Update available seats
+    cursor.execute('UPDATE shows SET available_seats = available_seats - ? WHERE id = ?', 
+                  (len(selected_seats), show_id))
+    
+    conn.commit()
+    conn.close()
+    
+    return booking_id
+
+def get_booked_seats(show_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute('SELECT seat_numbers FROM bookings WHERE show_id = ?', (show_id,))
+    bookings = cursor.fetchall()
+    conn.close()
+    
+    import json
+    booked_seats = []
+    for booking in bookings:
+        if booking[0]:
+            seats = json.loads(booking[0])
+            booked_seats.extend(seats)
+    
+    return booked_seats
+
+def get_booking_by_id(booking_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    sql_query = '''SELECT b.id, b.show_id, b.customer_name, b.customer_email, b.customer_phone, b.seat_numbers, b.total_amount, b.booking_date, s.show_date, s.show_time, m.title, t.name as theater_name
+                   FROM bookings b
+                   LEFT JOIN shows s ON b.show_id = s.id
+                   LEFT JOIN movies m ON s.movie_id = m.id
+                   LEFT JOIN theaters t ON s.theater_id = t.id
+                   WHERE b.id = ?'''
+    
+    cursor.execute(sql_query, (booking_id,))
+    booking = cursor.fetchone()
+    conn.close()
+    
+    return booking

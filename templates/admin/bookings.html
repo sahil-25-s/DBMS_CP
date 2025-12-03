@@ -11,7 +11,7 @@
                 <p>View and manage customer bookings</p>
             </div>
             <div class="header-right">
-                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">
+                <a href="{{ url_for('admin.admin_dashboard') }}" class="btn btn-outline">
                     <i class="fas fa-arrow-left"></i>
                     Back to Dashboard
                 </a>
@@ -104,8 +104,8 @@
                             </td>
                             <td>
                                 <div class="show-cell">
-                                    <div class="show-date">{{ booking.show_date.strftime('%Y-%m-%d') }}</div>
-                                    <div class="show-time">{{ booking.show_time.strftime('%I:%M %p') }}</div>
+                                    <div class="show-date">{{ booking.show_date }}</div>
+                                    <div class="show-time">{{ booking.show_time }}</div>
                                 </div>
                             </td>
                             <td>

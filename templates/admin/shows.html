@@ -53,11 +53,11 @@
                             </td>
                             <td>{{ show.theater_name }}</td>
                             <td>
-                                <span class="date-cell">{{ show.show_date.strftime('%Y-%m-%d') }}</span>
-                                <small>{{ show.show_date.strftime('%A') }}</small>
+                                <span class="date-cell">{{ show.show_date }}</span>
+                                <small>Show Date</small>
                             </td>
                             <td>
-                                <span class="time-cell">{{ show.show_time.strftime('%I:%M %p') }}</span>
+                                <span class="time-cell">{{ show.show_time }}</span>
                             </td>
                             <td>
                                 <span class="price-cell">₹{{ "%.0f"|format(show.price) }}</span>

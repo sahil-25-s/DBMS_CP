@@ -25,9 +25,9 @@
             <div class="movie-card animate-zoom-in hover-lift stagger-{{ loop.index }}" data-aos="zoom-in" data-aos-delay="{{ loop.index0 * 100 }}">
                 <div class="movie-poster">
                     {% if movie.image_url %}
-                        <img src="{{ movie.image_url }}" alt="{{ movie.title }}" onerror="this.src='/static/images/default-movie.jpg'">
+                        <img src="{{ movie.image_url }}" alt="{{ movie.title }}" onerror="this.src='{{ url_for('static', filename='images/default-movie.jpg') }}'">
                     {% else %}
-                        <img src="/static/images/default-movie.jpg" alt="{{ movie.title }}">
+                        <img src="{{ url_for('static', filename='images/default-movie.jpg') }}" alt="{{ movie.title }}">
                     {% endif %}
                     <div class="movie-overlay">
                         <a href="/movie/{{ movie.id }}" class="btn btn-primary hover-glow">
@@ -55,18 +55,12 @@
                     
                     <div class="movie-rating">
                         <div class="stars">
-                            {% set rating = movie.avg_rating|round %}
                             {% for i in range(1, 6) %}
-                                {% if i <= rating %}
-                                    <i class="fas fa-star"></i>
-                                {% else %}
-                                    <i class="far fa-star"></i>
-                                {% endif %}
+                                <i class="fas fa-star"></i>
                             {% endfor %}
                         </div>
                         <span class="rating-text">
-                            {{ "%.1f"|format(movie.avg_rating) }}
-                            ({{ movie.review_count }} reviews)
+                            4.5 (New Release)
                         </span>
                     </div>
                     

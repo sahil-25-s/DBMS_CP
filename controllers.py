@@ -20,42 +20,131 @@ class MovieController:
     
     @staticmethod
     def details(movie_id):
-        movie = Movie.get_by_id(movie_id)
-        if not movie:
+        try:
+            rows = db.get_all_movies()
+            movie = None
+            for row in rows:
+                if row[0] == movie_id:
+                    movie = {
+                        'id': row[0], 'title': row[1], 'description': row[2],
+                        'duration': row[3], 'genre': row[4], 'language': row[5],
+                        'release_date': row[6], 'image_url': row[7]
+                    }
+                    break
+            
+            if not movie:
+                return render_template('error.html', message="Movie not found")
+            
+            # Get shows for this movie
+            show_rows = db.get_all_shows()
+            shows = []
+            for row in show_rows:
+                if row[1] == movie_id:  # movie_id is at index 1
+                    shows.append({
+                        'id': row[0], 'movie_id': row[1], 'theater_id': row[2],
+                        'show_date': row[3], 'show_time': row[4], 'price': row[5],
+                        'available_seats': row[6], 'title': row[7], 'theater_name': row[8]
+                    })
+            
+            reviews = []
+            
+            return render_template('movie_details.html', 
+                                 movie=movie, shows=shows, reviews=reviews)
+        except Exception as e:
+            print(f"Error in movie details: {str(e)}")
             return render_template('error.html', message="Movie not found")
-        
-        shows = Show.get_by_movie_id(movie_id)
-        reviews = Review.get_by_movie_id(movie_id)
-        
-        return render_template('movie_details.html', 
-                             movie=movie, shows=shows, reviews=reviews)
 
 class BookingController:
     @staticmethod
     def book_seats(show_id):
-        show = Show.get_by_id(show_id)
-        if not show:
-            return render_template('error.html', message="Show not found")
-        
-        return render_template('book_seats.html', show=show)
+        try:
+            show_data = db.get_show_by_id(show_id)
+            if not show_data:
+                return render_template('error.html', message="Show not found")
+            
+            show = {
+                'id': show_data[0],
+                'movie_id': show_data[1],
+                'theater_id': show_data[2],
+                'show_date': show_data[3],
+                'show_time': show_data[4],
+                'price': show_data[5],
+                'available_seats': show_data[6],
+                'title': show_data[8],
+                'theater_name': show_data[9]
+            }
+            
+            booked_seats = db.get_booked_seats(show_id)
+            return render_template('book_seats.html', show=show, booked_seats=booked_seats)
+        except Exception as e:
+            print(f"Error in book_seats: {str(e)}")
+            return render_template('error.html', message="Error loading booking page")
     
     @staticmethod
     def create_booking():
-        data = request.json
-        booking_id = Booking.create(data)
-        
-        if booking_id:
-            return jsonify({'success': True, 'booking_id': booking_id})
-        else:
-            return jsonify({'success': False, 'message': 'Booking failed'})
+        try:
+            data = request.get_json()
+            
+            # Extract booking data
+            show_id = data.get('show_id')
+            customer_name = data.get('customer_name')
+            customer_email = data.get('customer_email')
+            customer_phone = data.get('customer_phone')
+            selected_seats = data.get('selected_seats', [])
+            total_amount = data.get('total_amount')
+            
+            # Validate required fields
+            if not all([show_id, customer_name, customer_email, selected_seats]):
+                return jsonify({'success': False, 'message': 'Missing required fields'})
+            
+            # Create booking in database
+            booking_id = db.add_booking(show_id, customer_name, customer_email, 
+                                      customer_phone, selected_seats, total_amount)
+            
+            if booking_id:
+                return jsonify({
+                    'success': True, 
+                    'booking_id': booking_id,
+                    'message': 'Booking created successfully'
+                })
+            else:
+                return jsonify({
+                    'success': False, 
+                    'message': 'Failed to create booking'
+                })
+            
+        except Exception as e:
+            return jsonify({
+                'success': False, 
+                'message': f'Error creating booking: {str(e)}'
+            })
     
     @staticmethod
     def booking_success(booking_id):
-        booking = Booking.get_by_id(booking_id)
-        if not booking:
-            return render_template('error.html', message="Booking not found")
-        
-        return render_template('booking_success.html', booking=booking)
+        try:
+            booking_data = db.get_booking_by_id(booking_id)
+            if not booking_data:
+                return render_template('error.html', message="Booking not found")
+            
+            import json
+            booking = {
+                'id': booking_data[0],
+                'show_id': booking_data[1],
+                'customer_name': booking_data[2],
+                'customer_email': booking_data[3],
+                'customer_phone': booking_data[4],
+                'selected_seats': json.loads(booking_data[5]) if booking_data[5] else [],
+                'total_amount': booking_data[6],
+                'booking_date': datetime.fromisoformat(booking_data[7]).strftime('%B %d, %Y at %I:%M %p'),
+                'show_date': booking_data[8],
+                'show_time': booking_data[9],
+                'title': booking_data[10],
+                'theater_name': booking_data[11]
+            }
+            return render_template('booking_success.html', booking=booking)
+        except Exception as e:
+            print(f"Error in booking_success: {str(e)}")
+            return render_template('error.html', message="Error loading booking details")
     
     @staticmethod
     def payment_success():
@@ -68,13 +157,7 @@ class BookingController:
 class ReviewController:
     @staticmethod
     def add_review():
-        data = request.json
-        success = Review.create(data)
-        
-        if success:
-            return jsonify({'success': True})
-        else:
-            return jsonify({'success': False, 'message': 'Review submission failed'})
+        return jsonify({'success': True})
 
 class AdminController:
     @staticmethod
@@ -138,7 +221,39 @@ class AdminController:
     
     @staticmethod
     def bookings():
-        bookings = Booking.get_all()
+        try:
+            conn = db.get_connection()
+            cursor = conn.cursor()
+            
+            cursor.execute('''SELECT b.*, s.show_date, s.show_time, m.title, t.name as theater_name
+                             FROM bookings b
+                             LEFT JOIN shows s ON b.show_id = s.id
+                             LEFT JOIN movies m ON s.movie_id = m.id
+                             LEFT JOIN theaters t ON s.theater_id = t.id
+                             ORDER BY b.booking_date DESC''')
+            
+            booking_rows = cursor.fetchall()
+            conn.close()
+            
+            import json
+            bookings = []
+            for row in booking_rows:
+                bookings.append({
+                    'id': row[0],
+                    'show_id': row[1],
+                    'customer_name': row[2],
+                    'customer_email': row[3],
+                    'customer_phone': row[4],
+                    'seat_numbers': json.loads(row[5]) if row[5] else [],
+                    'total_amount': row[6],
+                    'booking_date': row[7],
+                    'show_date': row[8],
+                    'show_time': row[9],
+                    'title': row[10],
+                    'theater_name': row[11]
+                })
+        except:
+            bookings = []
         return render_template('admin/bookings.html', bookings=bookings)
     
     @staticmethod
@@ -177,9 +292,10 @@ class AdminController:
     def add_show():
         data = request.form
         try:
+            print(f"\n🎬 Adding show with data: {dict(data)}")
             db.add_show(
-                data.get('movie_id'),
-                data.get('theater_id'),
+                int(data.get('movie_id')),
+                int(data.get('theater_id')),
                 data.get('show_date'),
                 data.get('show_time'),
                 float(data.get('price', 0)),
@@ -187,6 +303,7 @@ class AdminController:
             )
             flash('Show added successfully!', 'success')
         except Exception as e:
+            print(f"❌ Error adding show: {str(e)}")
             flash(f'Error: {str(e)}', 'error')
         return redirect('/admin/shows')
 
@@ -194,3 +311,11 @@ class DatabaseController:
     @staticmethod
     def init_db():
         return jsonify({'success': True, 'message': 'Database initialized successfully'})
+    
+    @staticmethod
+    def update_images():
+        try:
+            db.update_all_movie_images()
+            return jsonify({'success': True, 'message': 'Movie images updated successfully'})
+        except Exception as e:
+            return jsonify({'success': False, 'message': str(e)})

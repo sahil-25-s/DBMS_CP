@@ -107,7 +107,7 @@
                     ← Back to Seats
                 </button>
                 <button type="submit" class="btn btn-primary hover-glow">
-                    Proceed to Payment 💳
+                    Pay with Razorpay 💳
                 </button>
             </div>
         </form>
@@ -472,7 +472,7 @@ document.getElementById('bookingForm').addEventListener('submit', async function
     
     const formData = new FormData(this);
     const bookingData = {
-        show_id: document.getElementById('showId').value,
+        show_id: parseInt(document.getElementById('showId').value),
         customer_name: formData.get('customer_name'),
         customer_email: formData.get('customer_email'),
         customer_phone: formData.get('customer_phone'),
@@ -480,12 +480,30 @@ document.getElementById('bookingForm').addEventListener('submit', async function
         total_amount: selectedSeats.length * seatPrice
     };
     
-    // Store booking data in sessionStorage for after payment
-    sessionStorage.setItem('pendingBooking', JSON.stringify(bookingData));
+    // Show confirmation
+    if (!confirm(`Confirm booking for ${selectedSeats.length} seats (₹${selectedSeats.length * seatPrice})?`)) {
+        return;
+    }
     
-    // Show confirmation and redirect to payment instructions
-    if (confirm(`Proceed to payment for ${selectedSeats.length} seats (₹${selectedSeats.length * seatPrice})?`)) {
-        window.location.href = '/payment_instructions';
+    try {
+        const response = await fetch('/api/book_tickets', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bookingData)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Redirect to booking success page
+            window.location.href = `/booking_success/${result.booking_id}`;
+        } else {
+            alert('Booking failed: ' + result.message);
+        }
+    } catch (error) {
+        alert('Error creating booking: ' + error.message);
     }
 });
 </script>

@@ -34,20 +34,20 @@
                                     <i class="fas fa-building"></i>
                                     <div>
                                         <strong>{{ booking.theater_name }}</strong>
-                                        <small>{{ booking.location }}</small>
+                                        <small>Theater</small>
                                     </div>
                                 </div>
                                 <div class="detail-item">
                                     <i class="fas fa-calendar"></i>
                                     <div>
-                                        <strong>{{ booking.show_date.strftime('%A') }}</strong>
-                                        <small>{{ booking.show_date.strftime('%B %d, %Y') }}</small>
+                                        <strong>{{ booking.show_date }}</strong>
+                                        <small>Show Date</small>
                                     </div>
                                 </div>
                                 <div class="detail-item">
                                     <i class="fas fa-clock"></i>
                                     <div>
-                                        <strong>{{ booking.show_time.strftime('%I:%M %p') }}</strong>
+                                        <strong>{{ booking.show_time }}</strong>
                                         <small>Show Time</small>
                                     </div>
                                 </div>
@@ -63,11 +63,10 @@
                             </h3>
                             <div class="seats-booked">
                                 <strong>Seats: </strong>
-                                {% set seat_numbers = booking.seat_numbers|from_json if booking.seat_numbers else [] %}
-                                {{ seat_numbers|join(', ') }}
+                                {{ booking.selected_seats|join(', ') }}
                             </div>
                             <div class="seat-count">
-                                <strong>Number of Seats: </strong>{{ booking.seats_booked }}
+                                <strong>Number of Seats: </strong>{{ booking.selected_seats|length }}
                             </div>
                         </div>
 
@@ -81,10 +80,7 @@
                                     <strong>Name:</strong> {{ booking.customer_name }}
                                 </div>
                                 <div class="customer-detail">
-                                    <strong>Email:</strong> {{ booking.customer_email }}
-                                </div>
-                                <div class="customer-detail">
-                                    <strong>Phone:</strong> {{ booking.customer_phone }}
+                                    <strong>Booking Date:</strong> {{ booking.booking_date }}
                                 </div>
                             </div>
                         </div>
@@ -97,15 +93,15 @@
                             <div class="payment-details">
                                 <div class="payment-row">
                                     <span>Price per Seat:</span>
-                                    <span>₹{{ "%.0f"|format(booking.price) }}</span>
+                                    <span>₹200</span>
                                 </div>
                                 <div class="payment-row">
                                     <span>Number of Seats:</span>
-                                    <span>{{ booking.seats_booked }}</span>
+                                    <span>{{ booking.selected_seats|length }}</span>
                                 </div>
                                 <div class="payment-row total">
                                     <span>Total Amount:</span>
-                                    <span>₹{{ "%.0f"|format(booking.total_amount) }}</span>
+                                    <span>₹{{ booking.total_amount }}</span>
                                 </div>
                                 <div class="payment-status">
                                     <i class="fas fa-check-circle"></i>
@@ -118,7 +114,7 @@
                     <div class="ticket-footer">
                         <div class="booking-time">
                             <strong>Booked on:</strong>
-                            {{ booking.booking_date.strftime('%B %d, %Y at %I:%M %p') }}
+                            {{ booking.booking_date }}
                         </div>
                         <div class="ticket-qr">
                             <div class="qr-placeholder">
