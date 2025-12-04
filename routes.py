@@ -98,3 +98,7 @@ def add_theater():
 @admin_bp.route('/add_show', methods=['POST'])
 def add_show():
     return AdminController.add_show()
+
+@admin_bp.route('/delete_movie', methods=['POST'])
+def delete_movie():
+    return AdminController.delete_movie()

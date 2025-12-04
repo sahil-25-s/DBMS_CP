@@ -243,8 +243,18 @@ function editMovie(movieId) {
 
 function deleteMovie(movieId, movieTitle) {
     if (confirm(`Are you sure you want to delete "${movieTitle}"? This action cannot be undone.`)) {
-        // In a real application, this would send a DELETE request
-        alert(`Delete functionality for movie ${movieId} would be implemented here`);
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/admin/delete_movie';
+        
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'movie_id';
+        input.value = movieId;
+        
+        form.appendChild(input);
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 

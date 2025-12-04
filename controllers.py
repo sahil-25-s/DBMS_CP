@@ -314,6 +314,18 @@ class AdminController:
             print(f"❌ Error adding show: {str(e)}")
             flash(f'Error: {str(e)}', 'error')
         return redirect('/admin/shows')
+    
+    @staticmethod
+    def delete_movie():
+        movie_id = request.form.get('movie_id')
+        try:
+            if db.delete_movie(int(movie_id)):
+                flash('Movie deleted successfully!', 'success')
+            else:
+                flash('Movie not found!', 'error')
+        except Exception as e:
+            flash(f'Error: {str(e)}', 'error')
+        return redirect('/admin/movies')
 
 class FoodController:
     @staticmethod

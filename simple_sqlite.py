@@ -364,3 +364,12 @@ def add_food_order(booking_id, items, total_amount, discount_applied=0):
     conn.commit()
     conn.close()
     return order_id
+def delete_movie(movie_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute('DELETE FROM movies WHERE id = ?', (movie_id,))
+    conn.commit()
+    conn.close()
+    
+    return cursor.rowcount > 0
