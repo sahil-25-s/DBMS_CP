@@ -145,13 +145,13 @@
         </div>
 
         <div class="success-actions">
+            <a href="/food-menu" class="btn btn-success">
+                <i class="fas fa-utensils"></i>
+                Order Food
+            </a>
             <button class="btn btn-primary" onclick="window.print()">
                 <i class="fas fa-print"></i>
                 Print Ticket
-            </button>
-            <button class="btn btn-outline" onclick="downloadTicket()">
-                <i class="fas fa-download"></i>
-                Download PDF
             </button>
             <a href="{{ url_for('main.index') }}" class="btn btn-secondary">
                 <i class="fas fa-home"></i>

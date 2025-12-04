@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Food Menu{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="food-hero animate-fade-in-up">
+        <h1>🍿 Food Menu</h1>
+        <p>Enhance your movie experience with delicious snacks!</p>
+    </div>
+
+    <div class="food-menu animate-fade-in-up stagger-1">
+        {% for category in ['Snacks', 'Drinks', 'Combos'] %}
+        <div class="food-category">
+            <h2>{{ category }}</h2>
+            <div class="food-items">
+                {% for item in food_items %}
+                {% if item[3] == category %}
+                <div class="food-item">
+                    <div class="item-info">
+                        <h3>{{ item[1] }}</h3>
+                        <p class="price">₹{{ "%.0f"|format(item[2]) }}</p>
+                    </div>
+                    <div class="item-controls">
+                        <button onclick="updateQuantity({{ item[0] }}, -1)">-</button>
+                        <span id="qty-{{ item[0] }}">0</span>
+                        <button onclick="updateQuantity({{ item[0] }}, 1)">+</button>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="order-summary" id="orderSummary" style="display: none;">
+        <h3>🛒 Order Summary</h3>
+        <div id="orderItems"></div>
+        <div class="discount-info" id="discountInfo"></div>
+        <div class="total-amount">
+            <strong>Total: ₹<span id="totalAmount">0</span></strong>
+        </div>
+        <button class="btn btn-primary" onclick="proceedToCheckout()">Add to Booking</button>
+    </div>
+</div>
+
+<style>
+.food-hero {
+    text-align: center;
+    padding: 3rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius);
+    margin-bottom: 3rem;
+    color: white;
+}
+
+.food-category {
+    margin-bottom: 3rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius);
+    padding: 2rem;
+    color: white;
+}
+
+.food-category h2 {
+    margin-bottom: 2rem;
+    color: var(--primary);
+}
+
+.food-items {
+    display: grid;
+    gap: 1rem;
+}
+
+.food-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.item-info h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.price {
+    color: var(--success);
+    font-weight: 600;
+    margin: 0.5rem 0 0 0;
+}
+
+.item-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.item-controls button {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.item-controls span {
+    min-width: 30px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.order-summary {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-top: 3rem;
+    color: white;
+}
+
+.discount-info {
+    color: var(--success);
+    font-weight: 600;
+    margin: 1rem 0;
+}
+
+.total-amount {
+    font-size: 1.3rem;
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    text-align: center;
+}
+</style>
+
+<script>
+const foodItems = {{ food_items|tojson }};
+const cart = {};
+const bookingId = sessionStorage.getItem('currentBookingId');
+
+function updateQuantity(itemId, change) {
+    if (!cart[itemId]) cart[itemId] = 0;
+    cart[itemId] = Math.max(0, cart[itemId] + change);
+    
+    document.getElementById(`qty-${itemId}`).textContent = cart[itemId];
+    updateOrderSummary();
+}
+
+function updateOrderSummary() {
+    const orderItems = document.getElementById('orderItems');
+    const orderSummary = document.getElementById('orderSummary');
+    const totalAmountSpan = document.getElementById('totalAmount');
+    const discountInfo = document.getElementById('discountInfo');
+    
+    let html = '';
+    let total = 0;
+    let totalItems = 0;
+    
+    for (const [itemId, qty] of Object.entries(cart)) {
+        if (qty > 0) {
+            const item = foodItems.find(f => f[0] == itemId);
+            const itemTotal = item[2] * qty;
+            total += itemTotal;
+            totalItems += qty;
+            html += `<div>${item[1]} x ${qty} = ₹${itemTotal}</div>`;
+        }
+    }
+    
+    if (totalItems > 0) {
+        orderSummary.style.display = 'block';
+        orderItems.innerHTML = html;
+        
+        // Apply discounts
+        let discount = 0;
+        let discountText = '';
+        
+        // Family discount (4+ people)
+        const seatCount = parseInt(sessionStorage.getItem('seatCount') || '0');
+        if (seatCount >= 4) {
+            discount += total * 0.15;
+            discountText += 'Family Discount (15%): -₹' + Math.round(total * 0.15) + '<br>';
+        }
+        
+        // Bulk discount (10+ items)
+        if (totalItems >= 10) {
+            discount += total * 0.10;
+            discountText += 'Bulk Discount (10%): -₹' + Math.round(total * 0.10) + '<br>';
+        }
+        
+        const finalTotal = total - discount;
+        discountInfo.innerHTML = discountText;
+        totalAmountSpan.textContent = Math.round(finalTotal);
+    } else {
+        orderSummary.style.display = 'none';
+    }
+}
+
+function proceedToCheckout() {
+    const orderData = {
+        booking_id: bookingId,
+        items: cart,
+        total_amount: parseInt(document.getElementById('totalAmount').textContent)
+    };
+    
+    sessionStorage.setItem('foodOrder', JSON.stringify(orderData));
+    alert('Food items added to your booking!');
+    window.history.back();
+}
+</script>
+{% endblock %}

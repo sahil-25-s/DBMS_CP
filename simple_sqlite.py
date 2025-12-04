@@ -11,7 +11,7 @@ def init_database():
     conn = get_connection()
     cursor = conn.cursor()
     
-    print("💾 Creating database tables with SQL...")
+    print("Creating database tables with SQL...")
     
     # Create movies table
     movies_sql = '''CREATE TABLE IF NOT EXISTS movies (
@@ -25,7 +25,7 @@ def init_database():
         image_url TEXT
     )'''
     cursor.execute(movies_sql)
-    print("✅ Movies table created")
+    print("Movies table created")
     
     # Create theaters table
     theaters_sql = '''CREATE TABLE IF NOT EXISTS theaters (
@@ -35,7 +35,7 @@ def init_database():
         total_seats INTEGER DEFAULT 100
     )'''
     cursor.execute(theaters_sql)
-    print("✅ Theaters table created")
+    print("Theaters table created")
     
     # Create shows table
     shows_sql = '''CREATE TABLE IF NOT EXISTS shows (
@@ -48,12 +48,12 @@ def init_database():
         available_seats INTEGER
     )'''
     cursor.execute(shows_sql)
-    print("✅ Shows table created")
+    print("Shows table created")
     
     # Add sample data if tables are empty
     cursor.execute('SELECT COUNT(*) FROM movies')
     if cursor.fetchone()[0] == 0:
-        print("🎬 Adding sample movies...")
+        print("Adding sample movies...")
         sample_movies = [
             ('Avengers: Endgame', 'Epic superhero finale', 181, 'Action', 'English', '2024-01-15', 'https://upload.wikimedia.org/wikipedia/en/0/0d/Avengers_Endgame_poster.jpg'),
             ('Spider-Man', 'Friendly neighborhood hero', 148, 'Action', 'English', '2024-02-01', 'https://upload.wikimedia.org/wikipedia/en/2/21/Web_of_Spider-Man_Vol_1_129-1.png'),
@@ -62,7 +62,7 @@ def init_database():
         
         for movie in sample_movies:
             cursor.execute('INSERT INTO movies (title, description, duration, genre, language, release_date, image_url) VALUES (?, ?, ?, ?, ?, ?, ?)', movie)
-        print(f"✅ Added {len(sample_movies)} sample movies")
+        print(f"Added {len(sample_movies)} sample movies")
     else:
         # Update existing movies with proper images
         update_all_movie_images()
@@ -70,7 +70,7 @@ def init_database():
     # Add sample theaters
     cursor.execute('SELECT COUNT(*) FROM theaters')
     if cursor.fetchone()[0] == 0:
-        print("🏢 Adding sample theaters...")
+        print("Adding sample theaters...")
         sample_theaters = [
             ('PVR Cinemas', 'Mall Road', 96),
             ('INOX Theater', 'City Center', 120),
@@ -79,12 +79,12 @@ def init_database():
         
         for theater in sample_theaters:
             cursor.execute('INSERT INTO theaters (name, location, total_seats) VALUES (?, ?, ?)', theater)
-        print(f"✅ Added {len(sample_theaters)} sample theaters")
+        print(f"Added {len(sample_theaters)} sample theaters")
     
     # Add sample shows
     cursor.execute('SELECT COUNT(*) FROM shows')
     if cursor.fetchone()[0] == 0:
-        print("🎭 Adding sample shows...")
+        print("Adding sample shows...")
         sample_shows = [
             (1, 1, '2024-12-25', '18:00', 250.0, 96),
             (1, 2, '2024-12-25', '21:00', 300.0, 120),
@@ -96,11 +96,14 @@ def init_database():
         
         for show in sample_shows:
             cursor.execute('INSERT INTO shows (movie_id, theater_id, show_date, show_time, price, available_seats) VALUES (?, ?, ?, ?, ?, ?)', show)
-        print(f"✅ Added {len(sample_shows)} sample shows")
+        print(f"Added {len(sample_shows)} sample shows")
+    
+    # Initialize food tables
+    init_food_table()
     
     conn.commit()
     conn.close()
-    print("💾 Database initialization complete!\n")
+    print("Database initialization complete!\n")
 
 def add_movie(title, description, duration, genre, language, release_date, image_url):
     conn = get_connection()
@@ -216,7 +219,7 @@ def update_all_movie_images():
     conn = get_connection()
     cursor = conn.cursor()
     
-    print("🎬 Updating movie poster images...")
+    print("Updating movie poster images...")
     
     for title, image_url in movie_images.items():
         cursor.execute('SELECT id FROM movies WHERE title = ?', (title,))
@@ -224,11 +227,11 @@ def update_all_movie_images():
         if result:
             movie_id = result[0]
             cursor.execute('UPDATE movies SET image_url = ? WHERE id = ?', (image_url, movie_id))
-            print(f"✅ Updated {title} poster")
+            print(f"Updated {title} poster")
     
     conn.commit()
     conn.close()
-    print("🎬 All movie posters updated!\n")
+    print("All movie posters updated!\n")
 def get_show_by_id(show_id):
     conn = get_connection()
     cursor = conn.cursor()
@@ -301,3 +304,63 @@ def get_booking_by_id(booking_id):
     conn.close()
     
     return booking
+def init_food_table():
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute('''CREATE TABLE IF NOT EXISTS food_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        price REAL NOT NULL,
+        category TEXT NOT NULL
+    )''')
+    
+    cursor.execute('''CREATE TABLE IF NOT EXISTS food_orders (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        booking_id INTEGER,
+        items TEXT,
+        total_amount REAL,
+        discount_applied REAL DEFAULT 0
+    )''')
+    
+    # Add sample food items
+    cursor.execute('SELECT COUNT(*) FROM food_items')
+    if cursor.fetchone()[0] == 0:
+        food_items = [
+            ('Popcorn (Small)', 150, 'Snacks'),
+            ('Popcorn (Large)', 250, 'Snacks'),
+            ('Nachos', 200, 'Snacks'),
+            ('Hot Dog', 180, 'Snacks'),
+            ('Coke (Small)', 80, 'Drinks'),
+            ('Coke (Large)', 120, 'Drinks'),
+            ('Water Bottle', 50, 'Drinks'),
+            ('Combo 1 (Popcorn + Coke)', 200, 'Combos'),
+            ('Combo 2 (Nachos + Coke)', 250, 'Combos')
+        ]
+        
+        for item in food_items:
+            cursor.execute('INSERT INTO food_items (name, price, category) VALUES (?, ?, ?)', item)
+    
+    conn.commit()
+    conn.close()
+
+def get_food_items():
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM food_items ORDER BY category, name')
+    items = cursor.fetchall()
+    conn.close()
+    return items
+
+def add_food_order(booking_id, items, total_amount, discount_applied=0):
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    import json
+    cursor.execute('INSERT INTO food_orders (booking_id, items, total_amount, discount_applied) VALUES (?, ?, ?, ?)',
+                  (booking_id, json.dumps(items), total_amount, discount_applied))
+    
+    order_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+    return order_id

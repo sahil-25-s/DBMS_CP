@@ -79,12 +79,78 @@
         </div>
     </div>
 
-    <div class="customer-form animate-fade-in-up stagger-3" id="customerForm" style="display: none;">
+    <div class="food-selection animate-fade-in-up stagger-3" id="foodSelection" style="display: none;">
+        <h3>🍿 Add Food Items (Optional)</h3>
+        <div class="food-categories">
+            <div class="food-category">
+                <h4>Snacks</h4>
+                <div class="food-items">
+                    <div class="food-item" data-id="1" data-price="150" data-name="Popcorn (Small)">
+                        <span>Popcorn (Small) - ₹150</span>
+                        <div class="quantity-controls">
+                            <button type="button" onclick="updateFoodQuantity(1, -1)">-</button>
+                            <span id="food-qty-1">0</span>
+                            <button type="button" onclick="updateFoodQuantity(1, 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="food-item" data-id="2" data-price="250" data-name="Popcorn (Large)">
+                        <span>Popcorn (Large) - ₹250</span>
+                        <div class="quantity-controls">
+                            <button type="button" onclick="updateFoodQuantity(2, -1)">-</button>
+                            <span id="food-qty-2">0</span>
+                            <button type="button" onclick="updateFoodQuantity(2, 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="food-item" data-id="3" data-price="200" data-name="Nachos">
+                        <span>Nachos - ₹200</span>
+                        <div class="quantity-controls">
+                            <button type="button" onclick="updateFoodQuantity(3, -1)">-</button>
+                            <span id="food-qty-3">0</span>
+                            <button type="button" onclick="updateFoodQuantity(3, 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="food-category">
+                <h4>Drinks</h4>
+                <div class="food-items">
+                    <div class="food-item" data-id="5" data-price="80" data-name="Coke (Small)">
+                        <span>Coke (Small) - ₹80</span>
+                        <div class="quantity-controls">
+                            <button type="button" onclick="updateFoodQuantity(5, -1)">-</button>
+                            <span id="food-qty-5">0</span>
+                            <button type="button" onclick="updateFoodQuantity(5, 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="food-item" data-id="6" data-price="120" data-name="Coke (Large)">
+                        <span>Coke (Large) - ₹120</span>
+                        <div class="quantity-controls">
+                            <button type="button" onclick="updateFoodQuantity(6, -1)">-</button>
+                            <span id="food-qty-6">0</span>
+                            <button type="button" onclick="updateFoodQuantity(6, 1)">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="food-summary" id="foodSummary" style="display: none;">
+            <div class="food-total">Food Total: ₹<span id="foodTotal">0</span></div>
+            <div class="family-discount" id="familyDiscount" style="display: none;">Family Discount (15%): -₹<span id="discountAmount">0</span></div>
+        </div>
+        <div class="food-actions">
+            <button type="button" class="btn btn-outline" onclick="skipFood()">Skip Food</button>
+            <button type="button" class="btn btn-primary" onclick="proceedToCustomerForm()">Continue</button>
+        </div>
+    </div>
+
+    <div class="customer-form animate-fade-in-up stagger-4" id="customerForm" style="display: none;">
         <h3>👤 Customer Details</h3>
         <form id="bookingForm">
             <input type="hidden" id="showId" value="{{ show.id }}">
             <input type="hidden" id="selectedSeats" value="">
             <input type="hidden" id="totalPrice" value="0">
+            <input type="hidden" id="foodItems" value="">
+            <input type="hidden" id="foodTotal" value="0">
 
             <div class="form-row">
                 <div class="form-group">
@@ -107,7 +173,7 @@
                     ← Back to Seats
                 </button>
                 <button type="submit" class="btn btn-primary hover-glow">
-                    Pay with Razorpay 💳
+                    Complete Booking 🎫
                 </button>
             </div>
         </form>
@@ -356,6 +422,76 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
+.food-selection {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius);
+    padding: 3rem;
+    margin-bottom: 3rem;
+    color: white;
+}
+
+.food-categories {
+    display: grid;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.food-category h4 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.food-items {
+    display: grid;
+    gap: 1rem;
+}
+
+.food-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.quantity-controls button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+}
+
+.food-summary {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+}
+
+.family-discount {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.food-actions {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+}
+
 .form-actions {
     display: flex;
     gap: 2rem;
@@ -408,6 +544,8 @@
 <script>
 let selectedSeats = [];
 const seatPrice = {{ show.price }};
+let foodCart = {};
+let foodTotal = 0;
 
 function toggleSeat(seatId) {
     const seat = document.querySelector(`[data-seat="${seatId}"]`);
@@ -453,6 +591,57 @@ function proceedToBooking() {
     
     document.getElementById('selectedSeats').value = JSON.stringify(selectedSeats);
     document.getElementById('totalPrice').value = selectedSeats.length * seatPrice;
+    document.getElementById('foodSelection').style.display = 'block';
+    document.getElementById('foodSelection').scrollIntoView({ behavior: 'smooth' });
+}
+
+function updateFoodQuantity(itemId, change) {
+    if (!foodCart[itemId]) foodCart[itemId] = 0;
+    foodCart[itemId] = Math.max(0, foodCart[itemId] + change);
+    
+    document.getElementById(`food-qty-${itemId}`).textContent = foodCart[itemId];
+    updateFoodSummary();
+}
+
+function updateFoodSummary() {
+    const foodPrices = {1: 150, 2: 250, 3: 200, 5: 80, 6: 120};
+    let total = 0;
+    
+    for (const [itemId, qty] of Object.entries(foodCart)) {
+        if (qty > 0) {
+            total += foodPrices[itemId] * qty;
+        }
+    }
+    
+    // Family discount for 4+ people
+    let discount = 0;
+    if (selectedSeats.length >= 4 && total > 0) {
+        discount = Math.round(total * 0.15);
+        document.getElementById('familyDiscount').style.display = 'block';
+        document.getElementById('discountAmount').textContent = discount;
+    } else {
+        document.getElementById('familyDiscount').style.display = 'none';
+    }
+    
+    foodTotal = total - discount;
+    document.getElementById('foodTotal').textContent = foodTotal;
+    
+    if (total > 0) {
+        document.getElementById('foodSummary').style.display = 'block';
+    } else {
+        document.getElementById('foodSummary').style.display = 'none';
+    }
+}
+
+function skipFood() {
+    foodCart = {};
+    foodTotal = 0;
+    proceedToCustomerForm();
+}
+
+function proceedToCustomerForm() {
+    document.getElementById('foodItems').value = JSON.stringify(foodCart);
+    document.getElementById('foodTotal').value = foodTotal;
     document.getElementById('customerForm').style.display = 'block';
     document.getElementById('customerForm').scrollIntoView({ behavior: 'smooth' });
 }
@@ -477,7 +666,9 @@ document.getElementById('bookingForm').addEventListener('submit', async function
         customer_email: formData.get('customer_email'),
         customer_phone: formData.get('customer_phone'),
         selected_seats: selectedSeats,
-        total_amount: selectedSeats.length * seatPrice
+        total_amount: selectedSeats.length * seatPrice + foodTotal,
+        food_items: foodCart,
+        food_total: foodTotal
     };
     
     // Show confirmation
@@ -497,6 +688,9 @@ document.getElementById('bookingForm').addEventListener('submit', async function
         const result = await response.json();
         
         if (result.success) {
+            // Store booking info for food ordering
+            sessionStorage.setItem('currentBookingId', result.booking_id);
+            sessionStorage.setItem('seatCount', selectedSeats.length);
             // Redirect to booking success page
             window.location.href = `/booking_success/${result.booking_id}`;
         } else {

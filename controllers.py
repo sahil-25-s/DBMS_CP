@@ -98,8 +98,16 @@ class BookingController:
                 return jsonify({'success': False, 'message': 'Missing required fields'})
             
             # Create booking in database
+            seat_total = len(selected_seats) * 200  # Assuming base price
             booking_id = db.add_booking(show_id, customer_name, customer_email, 
-                                      customer_phone, selected_seats, total_amount)
+                                      customer_phone, selected_seats, seat_total)
+            
+            # Add food order if items selected
+            food_items = data.get('food_items', {})
+            food_total = data.get('food_total', 0)
+            
+            if booking_id and food_items and any(qty > 0 for qty in food_items.values()):
+                db.add_food_order(booking_id, food_items, food_total)
             
             if booking_id:
                 return jsonify({
@@ -307,9 +315,42 @@ class AdminController:
             flash(f'Error: {str(e)}', 'error')
         return redirect('/admin/shows')
 
+class FoodController:
+    @staticmethod
+    def food_menu():
+        try:
+            db.init_food_table()
+            food_items = db.get_food_items()
+            return render_template('food_menu.html', food_items=food_items)
+        except Exception as e:
+            return render_template('error.html', message="Error loading food menu")
+    
+    @staticmethod
+    def add_food_order():
+        try:
+            data = request.get_json()
+            booking_id = data.get('booking_id')
+            items = data.get('items')
+            total_amount = data.get('total_amount')
+            discount_applied = data.get('discount_applied', 0)
+            
+            order_id = db.add_food_order(booking_id, items, total_amount, discount_applied)
+            
+            return jsonify({
+                'success': True,
+                'order_id': order_id,
+                'message': 'Food order added successfully'
+            })
+        except Exception as e:
+            return jsonify({
+                'success': False,
+                'message': f'Error adding food order: {str(e)}'
+            })
+
 class DatabaseController:
     @staticmethod
     def init_db():
+        db.init_food_table()
         return jsonify({'success': True, 'message': 'Database initialized successfully'})
     
     @staticmethod

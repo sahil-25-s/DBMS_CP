@@ -1,5 +1,5 @@
 from flask import Blueprint
-from controllers import MovieController, BookingController, ReviewController, AdminController, DatabaseController
+from controllers import MovieController, BookingController, ReviewController, AdminController, DatabaseController, FoodController
 
 # Create blueprints
 main_bp = Blueprint('main', __name__)
@@ -49,6 +49,10 @@ def init_db():
 def update_images():
     return DatabaseController.update_images()
 
+@main_bp.route('/food-menu')
+def food_menu():
+    return FoodController.food_menu()
+
 # API routes
 @api_bp.route('/book_tickets', methods=['POST'])
 def book_tickets():
@@ -57,6 +61,10 @@ def book_tickets():
 @api_bp.route('/add_review', methods=['POST'])
 def add_review():
     return ReviewController.add_review()
+
+@api_bp.route('/add_food_order', methods=['POST'])
+def add_food_order():
+    return FoodController.add_food_order()
 
 # Admin routes
 @admin_bp.route('/')
